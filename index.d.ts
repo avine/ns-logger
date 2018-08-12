@@ -38,7 +38,5 @@ interface ILoggerState {
 }
 export declare const loggerState: ILoggerState;
 export declare const cleanStates: () => void;
-declare const _default: {
-    getLogger: (namespace: string, severity?: Severity) => Logger;
-};
-export default _default;
+export declare const getLogger: (namespace: string, severity?: Severity) => Logger;
+export {};

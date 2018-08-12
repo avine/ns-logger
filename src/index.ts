@@ -94,7 +94,7 @@ export const cleanStates = () => [
 
 const DEF_SEVERITY = Severity.Warn;
 
-const getLogger = (namespace: string, severity: Severity = DEF_SEVERITY) => {
+export const getLogger = (namespace: string, severity: Severity = DEF_SEVERITY) => {
   if (loggerState[namespace]) {
     return loggerState[namespace];
   }
@@ -110,5 +110,3 @@ const getLogger = (namespace: string, severity: Severity = DEF_SEVERITY) => {
   }
   return loggerState[namespace] = new Logger(namespace, ps !== undefined ? ps : severity);
 };
-
-export default { getLogger };

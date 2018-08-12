@@ -1,5 +1,5 @@
 // tslint:disable:object-literal-sort-keys
-import logger, { bindTo, cleanStates, getSeverityState, severityState } from './index';
+import { bindTo, cleanStates, getLogger, getSeverityState, severityState } from './index';
 
 describe('utils.logger', () => {
   beforeEach(() => {
@@ -7,13 +7,13 @@ describe('utils.logger', () => {
   });
 
   it('should always return the same logger instance', () => {
-    const a1 = logger.getLogger('NamespaceA');
-    const b1 = logger.getLogger('NamespaceB');
+    const a1 = getLogger('NamespaceA');
+    const b1 = getLogger('NamespaceB');
 
     expect(a1).not.toBe(b1);
 
-    const a2 = logger.getLogger('NamespaceA');
-    const b2 = logger.getLogger('NamespaceB');
+    const a2 = getLogger('NamespaceA');
+    const b2 = getLogger('NamespaceB');
 
     expect(a2).toBe(a1);
     expect(b2).toBe(b1);
@@ -23,7 +23,7 @@ describe('utils.logger', () => {
     spyOn(bindTo, 'console').and.callThrough();
 
     // By default the logger only output "warn" and "error".
-    const a = logger.getLogger('NamespaceA');
+    const a = getLogger('NamespaceA');
 
     // Total count of `*.not.toBe(bindTo.noop);`
     expect(bindTo.console).toHaveBeenCalledTimes(2);
@@ -94,10 +94,10 @@ describe('utils.logger', () => {
       '*': 4,
     });
 
-    expect(logger.getLogger('ModuleA:Feature1').level).toBe(0);
-    expect(logger.getLogger('ModuleA:Feature2').level).toBe(1);
-    expect(logger.getLogger('ModuleA:Feature3').level).toBe(2);
-    expect(logger.getLogger('ModuleB').level).toBe(3);
-    expect(logger.getLogger('ModuleC').level).toBe(4);
+    expect(getLogger('ModuleA:Feature1').level).toBe(0);
+    expect(getLogger('ModuleA:Feature2').level).toBe(1);
+    expect(getLogger('ModuleA:Feature3').level).toBe(2);
+    expect(getLogger('ModuleB').level).toBe(3);
+    expect(getLogger('ModuleC').level).toBe(4);
   });
 });

@@ -67,7 +67,7 @@ exports.cleanStates = () => [
 ].forEach((state) => Object.keys(state).forEach((namespace) => delete state[namespace]));
 // ===== Logger =====
 const DEF_SEVERITY = Severity.Warn;
-const getLogger = (namespace, severity = DEF_SEVERITY) => {
+exports.getLogger = (namespace, severity = DEF_SEVERITY) => {
     if (exports.loggerState[namespace]) {
         return exports.loggerState[namespace];
     }
@@ -83,4 +83,3 @@ const getLogger = (namespace, severity = DEF_SEVERITY) => {
     }
     return exports.loggerState[namespace] = new Logger(namespace, ps !== undefined ? ps : severity);
 };
-exports.default = { getLogger };
