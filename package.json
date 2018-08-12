@@ -1,5 +1,5 @@
 {
-  "name": "ns-logger",
+  "name": "@avine/ns-logger",
   "version": "0.5.0",
   "description": "Logger with namespaces for node and browser",
   "main": "index.js",
@@ -8,11 +8,12 @@
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "build": "tsc",
     "all": "npm run lint && npm test && npm run build",
-    "start": "http-server ./dist -a 127.0.0.1 -p 9000 -o -c-1"
+    "start": "http-server ./dist -a 127.0.0.1 -p 9000 -o -c-1",
+    "deploy": "npm publish ./"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/avine/module-logger.git"
+    "url": "git+https://github.com/avine/ns-logger.git"
   },
   "keywords": [
     "log",
@@ -27,9 +28,9 @@
   "author": "Stéphane Francel <contact@avine.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/avine/module-logger/issues"
+    "url": "https://github.com/avine/ns-logger/issues"
   },
-  "homepage": "https://github.com/avine/module-logger#readme",
+  "homepage": "https://github.com/avine/ns-logger#readme",
   "devDependencies": {
     "@types/jasmine": "^2.8.8",
     "http-server": "^0.11.1",
