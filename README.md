@@ -34,9 +34,32 @@ logger.log('Log NOT visible');
 logger.warn('Warn NOT visible');
 logger.error('Error NOT visible');
 
-// loggerAgain === logger
-const loggerAgain = getLogger('FirstModule');
+const loggerAgain = getLogger('FirstModule'); // logger === loggerAgain
+const logger2 = getLogger('SecondModule');    // logger !== logger2
+```
 
-// logger2 !== logger
-const logger2 = getLogger('SecondModule');
+## Browser
+
+You can use the script
+[https://unpkg.com/@avine/ns-logger/ns-logger.js](https://unpkg.com/@avine/ns-logger/ns-logger.js)
+that exposes the package as the global variable `NsLogger`.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>NsLogger</title>
+    <script src="https://unpkg.com/@avine/ns-logger/ns-logger.js" type="text/javascript"></script>
+  </head>
+
+  <body>
+    <p>Open the console to see the logs</p>
+
+    <script>
+      const logger = NsLogger.getLogger('MyModule');
+      logger.error('Oups!');
+    </script>
+  </body>
+</html>
 ```
