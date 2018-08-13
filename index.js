@@ -75,10 +75,10 @@ exports.getLogger = (namespace, severity = DEF_SEVERITY) => {
     if (s === undefined) {
         const [module, feature] = namespace.split(':');
         if (feature) {
-            s = exports.severityState[`${module}:*`]; // Wildcard for module's features
+            s = exports.severityState[`${module}:*`]; // Wildcard for all the features of a module
         }
         if (s === undefined) {
-            s = exports.severityState['*']; // Wildcard for all modules
+            s = exports.severityState['*']; // Wildcard for all modules (overwrite `DEF_SEVERITY`)
         }
     }
     return exports.loggerState[namespace] = new Logger(namespace, s !== undefined ? s : severity);

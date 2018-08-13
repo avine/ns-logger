@@ -1,0 +1,33 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NsLogger demos</title>
+  <script type="text/javascript" src="ns-logger.js"></script>
+</head>
+<body>
+  <h1>NsLogger</h1>
+  <p>Open the console to see the logs</p>
+
+  <script>
+    const logger1 = NsLogger.getLogger('NS_1');
+    logger1.trace('Trace', 'NOT visible');
+    logger1.log('Log', 'NOT visible');
+    logger1.warn('Warn', 'Visible');
+    logger1.error('Error', 'Visible');
+
+    logger1.level = 0;
+    logger1.trace('Trace', 'Visible');
+    logger1.log('Log', 'Visible');
+    logger1.warn('Warn', 'Visible');
+    logger1.error('Error', 'Visible');
+
+    const logger2 = NsLogger.getLogger('NS_2');
+    logger2.trace('Trace', 'NOT visible');
+    logger2.log('Log', 'NOT visible');
+    logger2.warn('Warn', 'Visible');
+    logger2.error('Error', 'Visible');
+  </script>
+</html>
