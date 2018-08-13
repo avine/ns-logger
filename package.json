@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
-    "test": "ts-node node_modules/jasmine/bin/jasmine",
+    "test": "mocha -r ts-node/register src/**/*.test.ts",
+    "coverage": "nyc mocha",
     "build:node": "tsc",
     "build:browser": "node expose-global.js",
     "build": "npm run build:node && npm run build:browser",
@@ -34,13 +35,35 @@
   },
   "homepage": "https://github.com/avine/ns-logger#readme",
   "devDependencies": {
-    "@types/jasmine": "^2.8.8",
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/sinon": "^5.0.1",
+    "@types/sinon-chai": "^3.2.0",
+    "chai": "^4.1.2",
     "http-server": "^0.11.1",
-    "jasmine": "^3.2.0",
-    "jasmine-spec-reporter": "^4.2.1",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
+    "sinon": "^6.1.5",
+    "sinon-chai": "^3.2.0",
+    "source-map-support": "^0.5.8",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1",
     "uglify-es": "^3.3.9"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.test.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ]
   }
 }
