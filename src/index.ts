@@ -54,15 +54,15 @@ export class Logger implements ILogger {
 interface ISeverityState { [namespace: string]: Severity; }
 
 export const getSeverityState = (config: string) =>
-  config.split(';').reduce((state, param) => {
+  config.split(';').reduce((severityState, param) => {
     const params = param.split('=');
     const namespace = params[0].trim();
     const severity = +(params[1] || '').trim();
     // The following is like testing: `severity === Severity[Severity[severity]]`
     if (namespace && Severity[severity] in Severity) {
-      state[namespace] = severity as Severity;
+      severityState[namespace] = severity as Severity;
     }
-    return state;
+    return severityState;
   }, {} as ISeverityState);
 
 const getStoredSeverityState = () => {
@@ -73,40 +73,47 @@ const getStoredSeverityState = () => {
   }
 };
 
-// Note that the stored severity is only retrieved once when the script is loaded!
-// When you set `localStorage.NsLogger` from the console, you have to reload the page to reflect the changes.
-export const severityState = getStoredSeverityState();
-
 // ===== Logger state =====
 
 interface ILoggerState { [namespace: string]: Logger; }
 
-export const loggerState: ILoggerState = {};
+// ===== All states =====
 
-// ===== Clean states =====
+export interface IState {
+  severity: ISeverityState;
+  logger: ILoggerState;
+}
 
-export const cleanStates = () => [
-  severityState,
-  loggerState,
-].forEach((state) => Object.keys(state).forEach((namespace) => delete state[namespace]));
+export const state: IState = {
+  // Note that the stored severity is only retrieved once when the script is loaded!
+  // When you set `localStorage.NsLogger` from the console, you have to reload the page to reflect the changes.
+  severity: getStoredSeverityState(),
+
+  logger: {},
+};
+
+export const cleanState = () => {
+  state.severity = {};
+  state.logger = {};
+};
 
 // ===== Logger =====
 
 const DEF_SEVERITY = Severity.Warn;
 
 export const getLogger = (namespace: string, severity: Severity = DEF_SEVERITY) => {
-  if (loggerState[namespace]) {
-    return loggerState[namespace];
+  if (state.logger[namespace]) {
+    return state.logger[namespace];
   }
-  let s = severityState[namespace];
+  let s = state.severity[namespace];
   if (s === undefined) {
     const [module, feature] = namespace.split(':');
     if (feature) {
-      s = severityState[`${module}:*`]; // Wildcard for all the features of a module
+      s = state.severity[`${module}:*`]; // Wildcard for all the features of a module
     }
     if (s === undefined) {
-      s = severityState['*']; // Wildcard for all modules (overwrite `DEF_SEVERITY`)
+      s = state.severity['*']; // Wildcard for all modules (overwrite `DEF_SEVERITY`)
     }
   }
-  return loggerState[namespace] = new Logger(namespace, s !== undefined ? s : severity);
+  return state.logger[namespace] = new Logger(namespace, s !== undefined ? s : severity);
 };

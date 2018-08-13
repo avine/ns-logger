@@ -1,6 +1,6 @@
 // tslint:disable:object-literal-sort-keys
 
-import { bindTo, cleanStates, getLogger, getSeverityState, severityState } from './index';
+import { bindTo, cleanState, getLogger, getSeverityState, Severity, state } from './index';
 
 import { spy } from 'sinon';
 
@@ -11,17 +11,17 @@ chai.use(sinonChai);
 
 describe('NsLogger', () => {
   beforeEach(() => {
-    cleanStates();
+    cleanState();
   });
 
   it('should always return the same logger instance', () => {
-    const a1 = getLogger('NamespaceA');
-    const b1 = getLogger('NamespaceB');
+    const a1 = getLogger('NamespaceA'/*, Severity.Warn*/);
+    const b1 = getLogger('NamespaceB'/*, Severity.Warn*/);
 
     expect(a1).not.to.equal(b1);
 
-    const a2 = getLogger('NamespaceA');
-    const b2 = getLogger('NamespaceB');
+    const a2 = getLogger('NamespaceA', Severity.Error);
+    const b2 = getLogger('NamespaceB', Severity.Error);
 
     expect(a2).to.equal(a1);
     expect(b2).to.equal(b1);
@@ -95,13 +95,13 @@ describe('NsLogger', () => {
   });
 
   it('should use severity state to set logger level', () => {
-    Object.assign(severityState, {
+    state.severity = {
       'ModuleA:Feature1': 0,
       'ModuleA:Feature2': 1,
       'ModuleA:*': 2,
       'ModuleB': 3,
       '*': 4,
-    });
+    };
 
     expect(getLogger('ModuleA:Feature1').level).to.equal(0);
     expect(getLogger('ModuleA:Feature2').level).to.equal(1);

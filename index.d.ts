@@ -32,11 +32,14 @@ interface ISeverityState {
     [namespace: string]: Severity;
 }
 export declare const getSeverityState: (config: string) => ISeverityState;
-export declare const severityState: ISeverityState;
 interface ILoggerState {
     [namespace: string]: Logger;
 }
-export declare const loggerState: ILoggerState;
-export declare const cleanStates: () => void;
+export interface IState {
+    severity: ISeverityState;
+    logger: ILoggerState;
+}
+export declare const state: IState;
+export declare const cleanState: () => void;
 export declare const getLogger: (namespace: string, severity?: Severity) => Logger;
 export {};
