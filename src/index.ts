@@ -2,7 +2,7 @@
 
 type LogLevel = 'trace' | 'log' | 'warn' | 'error';
 
-type LogFn = (...args: any[]) => string;
+type LogFn = (...args: any[]) => void;
 
 interface ILogger {
   trace: LogFn;
@@ -43,7 +43,7 @@ export class Logger implements ILogger {
     return this.severity;
   }
   set level(severity: Severity) {
-    // Note that changing the `severity` programmatically will NOT update the persisted severity!
+    // Note that changing the `severity` programmatically will NOT update the stored severity!
     this.severity = severity;
     Object.assign(this, loggerBuilder(this.namespace, severity));
   }
@@ -65,17 +65,17 @@ export const getSeverityState = (config: string) =>
     return state;
   }, {} as ISeverityState);
 
-const getPersistedSeverityState = () => {
+const getStoredSeverityState = () => {
   try {
-    return getSeverityState(sessionStorage.getItem('Logger') || '');
+    return getSeverityState(localStorage.getItem('NsLogger') || '');
   } catch (e) {
     return {} as ISeverityState;
   }
 };
 
-// Note that the persisted severity is only evaluated once when the script is loaded!
-// When you set the `sessionStorage` from the console, you have to reload the page to reflect the changes.
-export const severityState = getPersistedSeverityState();
+// Note that the stored severity is only retrieved once when the script is loaded!
+// When you set `localStorage.NsLogger` from the console, you have to reload the page to reflect the changes.
+export const severityState = getStoredSeverityState();
 
 // ===== Logger state =====
 
@@ -98,15 +98,15 @@ export const getLogger = (namespace: string, severity: Severity = DEF_SEVERITY) 
   if (loggerState[namespace]) {
     return loggerState[namespace];
   }
-  let ps = severityState[namespace];
-  if (ps === undefined) {
+  let s = severityState[namespace];
+  if (s === undefined) {
     const [module, feature] = namespace.split(':');
     if (feature) {
-      ps = severityState[`${module}:*`]; // Wildcard for module's features
+      s = severityState[`${module}:*`]; // Wildcard for all the features of a module
     }
-    if (ps === undefined) {
-      ps = severityState['*']; // Wildcard for all modules
+    if (s === undefined) {
+      s = severityState['*']; // Wildcard for all modules (overwrite `DEF_SEVERITY`)
     }
   }
-  return loggerState[namespace] = new Logger(namespace, ps !== undefined ? ps : severity);
+  return loggerState[namespace] = new Logger(namespace, s !== undefined ? s : severity);
 };

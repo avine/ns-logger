@@ -32,7 +32,7 @@ class Logger {
         return this.severity;
     }
     set level(severity) {
-        // Note that changing the `severity` programmatically will NOT update the persisted severity!
+        // Note that changing the `severity` programmatically will NOT update the stored severity!
         this.severity = severity;
         Object.assign(this, loggerBuilder(this.namespace, severity));
     }
@@ -48,17 +48,17 @@ exports.getSeverityState = (config) => config.split(';').reduce((state, param) =
     }
     return state;
 }, {});
-const getPersistedSeverityState = () => {
+const getStoredSeverityState = () => {
     try {
-        return exports.getSeverityState(sessionStorage.getItem('Logger') || '');
+        return exports.getSeverityState(localStorage.getItem('NsLogger') || '');
     }
     catch (e) {
         return {};
     }
 };
-// Note that the persisted severity is only evaluated once when the script is loaded!
-// When you set the `sessionStorage` from the console, you have to reload the page to reflect the changes.
-exports.severityState = getPersistedSeverityState();
+// Note that the stored severity is only retrieved once when the script is loaded!
+// When you set `localStorage.NsLogger` from the console, you have to reload the page to reflect the changes.
+exports.severityState = getStoredSeverityState();
 exports.loggerState = {};
 // ===== Clean states =====
 exports.cleanStates = () => [
@@ -71,15 +71,15 @@ exports.getLogger = (namespace, severity = DEF_SEVERITY) => {
     if (exports.loggerState[namespace]) {
         return exports.loggerState[namespace];
     }
-    let ps = exports.severityState[namespace];
-    if (ps === undefined) {
+    let s = exports.severityState[namespace];
+    if (s === undefined) {
         const [module, feature] = namespace.split(':');
         if (feature) {
-            ps = exports.severityState[`${module}:*`]; // Wildcard for module's features
+            s = exports.severityState[`${module}:*`]; // Wildcard for module's features
         }
-        if (ps === undefined) {
-            ps = exports.severityState['*']; // Wildcard for all modules
+        if (s === undefined) {
+            s = exports.severityState['*']; // Wildcard for all modules
         }
     }
-    return exports.loggerState[namespace] = new Logger(namespace, ps !== undefined ? ps : severity);
+    return exports.loggerState[namespace] = new Logger(namespace, s !== undefined ? s : severity);
 };

@@ -1,7 +1,7 @@
 // tslint:disable:object-literal-sort-keys
 import { bindTo, cleanStates, getLogger, getSeverityState, severityState } from './index';
 
-describe('utils.logger', () => {
+describe('NsLogger', () => {
   beforeEach(() => {
     cleanStates();
   });
@@ -25,40 +25,41 @@ describe('utils.logger', () => {
     // By default the logger only output "warn" and "error".
     const a = getLogger('NamespaceA');
 
-    // Total count of `*.not.toBe(bindTo.noop);`
-    expect(bindTo.console).toHaveBeenCalledTimes(2);
     expect(a.trace).toBe(bindTo.noop);
     expect(a.log).toBe(bindTo.noop);
     expect(a.warn).not.toBe(bindTo.noop); // = 1
     expect(a.error).not.toBe(bindTo.noop); // = 2
 
+    // Total count of `*.not.toBe(bindTo.noop);`
+    expect(bindTo.console).toHaveBeenCalledTimes(2);
+
     a.level = 0;
-    expect(bindTo.console).toHaveBeenCalledTimes(6);
     expect(a.trace).not.toBe(bindTo.noop); // = 3
     expect(a.log).not.toBe(bindTo.noop); // = 4
     expect(a.warn).not.toBe(bindTo.noop); // = 5
     expect(a.error).not.toBe(bindTo.noop); // = 6
+    expect(bindTo.console).toHaveBeenCalledTimes(6);
 
     a.level = 1;
-    expect(bindTo.console).toHaveBeenCalledTimes(9);
     expect(a.trace).toBe(bindTo.noop);
     expect(a.log).not.toBe(bindTo.noop); // = 7
     expect(a.warn).not.toBe(bindTo.noop); // = 8
     expect(a.error).not.toBe(bindTo.noop); // = 9
+    expect(bindTo.console).toHaveBeenCalledTimes(9);
 
     a.level = 2;
-    expect(bindTo.console).toHaveBeenCalledTimes(11);
     expect(a.trace).toBe(bindTo.noop);
     expect(a.log).toBe(bindTo.noop);
     expect(a.warn).not.toBe(bindTo.noop); // = 10
     expect(a.error).not.toBe(bindTo.noop); // = 11
+    expect(bindTo.console).toHaveBeenCalledTimes(11);
 
     a.level = 3;
-    expect(bindTo.console).toHaveBeenCalledTimes(12);
     expect(a.trace).toBe(bindTo.noop);
     expect(a.log).toBe(bindTo.noop);
     expect(a.warn).toBe(bindTo.noop);
     expect(a.error).not.toBe(bindTo.noop); // = 12
+    expect(bindTo.console).toHaveBeenCalledTimes(12);
 
     a.level = 4;
     expect(a.trace).toBe(bindTo.noop);

@@ -1,5 +1,5 @@
 declare type LogLevel = 'trace' | 'log' | 'warn' | 'error';
-declare type LogFn = (...args: any[]) => string;
+declare type LogFn = (...args: any[]) => void;
 interface ILogger {
     trace: LogFn;
     log: LogFn;
