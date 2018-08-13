@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
-    "test": "mocha -r ts-node/register src/**/*.test.ts",
-    "coverage": "nyc mocha",
+    "test:base": "mocha --require ts-node/register src/**/*.test.ts",
+    "test": "nyc mocha",
     "build:node": "tsc",
     "build:browser": "node expose-global.js",
     "build": "npm run build:node && npm run build:browser",
