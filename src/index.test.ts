@@ -52,7 +52,7 @@ describe('NsLogger', () => {
     expect(aCopy.level).to.equal(2); // = Severity.Warn
     expect(bCopy.level).to.equal(1); // = Severity.Log
 
-    // Only newly created logger are affected by the new default severity settings.
+    // Only newly created loggers are affected by the new default severity settings.
     expect(c.level).to.equal(3); // = Severity.Error
   });
 
