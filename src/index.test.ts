@@ -1,6 +1,6 @@
 // tslint:disable:object-literal-sort-keys
 
-import { bindTo, cleanState, getLogger, getSeverityState, Severity, state } from './index';
+import { bindTo, cleanState, getLogger, getSeverityState, setDefaultSeverity, Severity, state } from './index';
 
 import { spy } from 'sinon';
 
@@ -11,20 +11,49 @@ chai.use(sinonChai);
 
 describe('NsLogger', () => {
   beforeEach(() => {
+    setDefaultSeverity(Severity.Warn);
     cleanState();
   });
 
   it('should always return the same logger instance', () => {
-    const a1 = getLogger('NamespaceA'/*, Severity.Warn*/);
-    const b1 = getLogger('NamespaceB'/*, Severity.Warn*/);
+    const a1 = getLogger('NamespaceA');
+    const b1 = getLogger('NamespaceB');
+
+    // Check logger name
+    expect(a1.name).to.equal('NamespaceA');
+    expect(b1.name).to.equal('NamespaceB');
 
     expect(a1).not.to.equal(b1);
 
-    const a2 = getLogger('NamespaceA', Severity.Error);
-    const b2 = getLogger('NamespaceB', Severity.Error);
+    // Ask for the same loggers again ...
+    const a2 = getLogger('NamespaceA');
+    const b2 = getLogger('NamespaceB');
 
+    // ... and you get the same logger instances ...
     expect(a2).to.equal(a1);
     expect(b2).to.equal(b1);
+  });
+
+  it('should change the default severity', () => {
+    const a = getLogger('NamespaceA');
+
+    setDefaultSeverity(Severity.Log);
+    const b = getLogger('NamespaceB');
+
+    expect(a.level).to.equal(2); // = Severity.Warn
+    expect(b.level).to.equal(1); // = Severity.Log
+
+    setDefaultSeverity(Severity.Error);
+    const aCopy = getLogger('NamespaceA');
+    const bCopy = getLogger('NamespaceB');
+    const c = getLogger('NamespaceC');
+
+    // Loggers that already exists are NOT affected by the new default severity setting.
+    expect(aCopy.level).to.equal(2); // = Severity.Warn
+    expect(bCopy.level).to.equal(1); // = Severity.Log
+
+    // Only newly created logger are affected by the new default severity setting.
+    expect(c.level).to.equal(3); // = Severity.Error
   });
 
   it ('should change severity programmatically', () => {

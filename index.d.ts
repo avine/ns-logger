@@ -13,6 +13,8 @@ export declare enum Severity {
     Error = 3,
     Silent = 4
 }
+export declare const setDefaultSeverity: (severity: Severity) => void;
+export declare const disableForProduction: () => void;
 export declare const bindTo: {
     console: (level: LogLevel, namespace: string) => any;
     noop: () => void;
@@ -41,5 +43,5 @@ export interface IState {
 }
 export declare const state: IState;
 export declare const cleanState: () => void;
-export declare const getLogger: (namespace: string, severity?: Severity) => Logger;
+export declare const getLogger: (namespace: string) => Logger;
 export {};

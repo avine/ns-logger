@@ -13,6 +13,16 @@ interface ILogger {
 
 export enum Severity { Trace, Log, Warn, Error, Silent }
 
+// ===== Settings =====
+
+const settings = {
+  defaultSeverity: Severity.Warn,
+  disabled: false,
+};
+
+export const setDefaultSeverity = (severity: Severity) => { settings.defaultSeverity = severity; };
+export const disableForProduction = () => { settings.disabled = true; };
+
 // ===== Logger builder =====
 
 const LOG_LEVELS: LogLevel[] = ['trace', 'log', 'warn', 'error'];
@@ -24,7 +34,7 @@ export const bindTo = {
 
 const loggerBuilder = (namespace: string, severity: Severity) =>
   LOG_LEVELS.reduce((logger, level, index) => {
-    logger[level] = index >= severity ? bindTo.console(level, namespace) : bindTo.noop;
+    logger[level] = index >= severity && !settings.disabled ? bindTo.console(level, namespace) : bindTo.noop;
     return logger;
   }, {} as ILogger);
 
@@ -97,23 +107,30 @@ export const cleanState = () => {
   state.logger = {};
 };
 
-// ===== Logger =====
+// ===== Get severity =====
 
-const DEF_SEVERITY = Severity.Warn;
+const getSeverity = (namespace: string) => {
+  let severity = state.severity[namespace];
+  if (severity === undefined) {
+    const [module, feature] = namespace.split(':');
+    if (feature) {
+      severity = state.severity[`${module}:*`]; // Wildcard for all the features of a module
+    }
+    if (severity === undefined) {
+      severity = state.severity['*']; // Wildcard for all modules (overwrite `settings.defaultSeverity`)
+    }
+    if (severity === undefined) {
+      severity = settings.defaultSeverity;
+    }
+  }
+  return severity;
+};
 
-export const getLogger = (namespace: string, severity: Severity = DEF_SEVERITY) => {
+// ===== Get logger =====
+
+export const getLogger = (namespace: string) => {
   if (state.logger[namespace]) {
     return state.logger[namespace];
   }
-  let s = state.severity[namespace];
-  if (s === undefined) {
-    const [module, feature] = namespace.split(':');
-    if (feature) {
-      s = state.severity[`${module}:*`]; // Wildcard for all the features of a module
-    }
-    if (s === undefined) {
-      s = state.severity['*']; // Wildcard for all modules (overwrite `DEF_SEVERITY`)
-    }
-  }
-  return state.logger[namespace] = new Logger(namespace, s !== undefined ? s : severity);
+  return state.logger[namespace] = new Logger(namespace, getSeverity(namespace));
 };
