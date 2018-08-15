@@ -1,0 +1,74 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Demo | NsLogger</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script type="text/javascript" src="ns-logger.js"></script>
+</head>
+<body>
+  <h1>NsLogger</h1>
+  <blockquote>
+    Open the console to see the logs.<br>
+    Check the source code to understand what's happening.
+  </blockquote>
+
+  <h2>Set localStorage</h2>
+  <p>
+    <pre><code>localStorage.setItem('NsLogger', 'ModuleA:Feature1 = 0; ModuleA:Feature2 = 1; ModuleA:* = 2; ModuleB = 3; * = 4');</code></pre>
+    <button id="set-storage">Set and reload</button>
+  </p>
+
+  <h2>Remove localStorage</h2>
+  <p>
+    <pre><code>localStorage.removeItem('NsLogger');</code></pre>
+    <button id="remove-storage">Remove and reload</button>
+  </p>
+
+  <h2>Logger severity state</h2>
+  <p>
+    <pre><code id="current-storage"></code></pre>
+  </p>
+
+  <h2>Output logs in the console</h2>
+  <p id="output-logs">
+    <button>ModuleA:Feature1</button>
+    <button>ModuleA:Feature2</button>
+    <button>ModuleA:Feature3</button>
+    <button>ModuleB</button>
+    <button>ModuleC</button>
+  </p>
+
+  <script>
+    document.getElementById('set-storage').addEventListener('click', () => {
+      localStorage.setItem('NsLogger', 'ModuleA:Feature1 = 0; ModuleA:Feature2 = 1; ModuleA:* = 2; ModuleB = 3; * = 4');
+      document.location.reload();
+    });
+
+    document.getElementById('remove-storage').addEventListener('click', () => {
+      localStorage.removeItem('NsLogger');
+      document.location.reload();
+    });
+
+    document.getElementById('current-storage').innerHTML =
+      'NsLogger.state.severity = ' + JSON.stringify(NsLogger.state.severity);
+
+    document.getElementById('output-logs').addEventListener('click', (event) => {
+      if (event.target.nodeName !== 'BUTTON') {
+        return;
+      }
+      const namespace = event.target.innerText;
+      const logger = NsLogger.getLogger(namespace);
+
+      logger.trace('Trace');
+      logger.log('Log');
+      logger.warn('Warn');
+      logger.error('Error');
+    });
+  </script>
+</html>

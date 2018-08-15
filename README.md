@@ -21,7 +21,7 @@ logger.warn('Warn visible');
 logger.error('Error visible');
 ```
 
-Console output:
+*Console output:*
 
 ```console
 [MyNamespace] Warn visible
@@ -60,7 +60,7 @@ logger.warn('Warn hidden...');
 logger.error('Error hidden...');
 ```
 
-Console output:
+*Console output:*
 
 ```console
 [MyNamespace] Now Log visible!
@@ -97,7 +97,7 @@ b.log('NamespaceB level:', b.level);
 c.error('NamespaceC level:', c.level);
 ```
 
-Console output:
+*Console output:*
 
 ```console
 [NamespaceA] aCopy === a ? true
@@ -133,7 +133,7 @@ console.log(
 );
 ```
 
-Console output:
+*Console output:*
 
 ```console
 0 1 2 3 4
@@ -170,9 +170,14 @@ You can also import the package in your code and bundle your application with `w
 
 ```bash
 git clone https://github.com/avine/ns-logger.git
+
 cd ./ns-logger
+
 npm install
+
 npm run all # npm run lint && npm test && npm run build
+
+npm start # this will launch a demo in your favorite browser
 ```
 
 ## License

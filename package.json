@@ -1,6 +1,6 @@
 {
   "name": "@avine/ns-logger",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Logger with namespaces for node and browser",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "build:browser": "node expose-global.js",
     "build": "npm run build:node && npm run build:browser",
     "all": "npm run lint && npm test && npm run build",
-    "start": "http-server ./demos -a 127.0.0.1 -p 9000 -o -c-1",
+    "start": "http-server ./demo -a 127.0.0.1 -p 9000 -o -c-1",
     "deploy": "npm publish ./ --access=public"
   },
   "repository": {
