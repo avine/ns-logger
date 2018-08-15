@@ -21,7 +21,7 @@ const settings = {
 };
 
 export const setDefaultSeverity = (severity: Severity) => { settings.defaultSeverity = severity; };
-export const disableForProduction = () => { settings.disabled = true; };
+export const disableInProduction = () => { settings.disabled = true; };
 
 // ===== Logger builder =====
 
@@ -67,7 +67,7 @@ export const getSeverityState = (config: string) =>
   config.split(';').reduce((severityState, param) => {
     const params = param.split('=');
     const namespace = params[0].trim();
-    const severity = +(params[1] || '').trim();
+    const severity = +params[1];
     // The following is like testing: `severity === Severity[Severity[severity]]`
     if (namespace && Severity[severity] in Severity) {
       severityState[namespace] = severity as Severity;
@@ -77,17 +77,19 @@ export const getSeverityState = (config: string) =>
 
 const getStoredSeverityState = () => {
   try {
-    return getSeverityState(localStorage.getItem('NsLogger') || '');
-  } catch (e) {
-    return {} as ISeverityState;
-  }
+    const config = localStorage.getItem('NsLogger');
+    if (config) {
+      return getSeverityState(config);
+    }
+  } catch (ignore) {} // tslint:disable-line:no-empty
+  return {} as ISeverityState;
 };
 
 // ===== Logger state =====
 
 interface ILoggerState { [namespace: string]: Logger; }
 
-// ===== All states =====
+// ===== Global state =====
 
 export interface IState {
   severity: ISeverityState;

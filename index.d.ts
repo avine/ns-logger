@@ -14,7 +14,7 @@ export declare enum Severity {
     Silent = 4
 }
 export declare const setDefaultSeverity: (severity: Severity) => void;
-export declare const disableForProduction: () => void;
+export declare const disableInProduction: () => void;
 export declare const bindTo: {
     console: (level: LogLevel, namespace: string) => any;
     noop: () => void;

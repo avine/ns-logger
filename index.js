@@ -15,7 +15,7 @@ const settings = {
     disabled: false,
 };
 exports.setDefaultSeverity = (severity) => { settings.defaultSeverity = severity; };
-exports.disableForProduction = () => { settings.disabled = true; };
+exports.disableInProduction = () => { settings.disabled = true; };
 // ===== Logger builder =====
 const LOG_LEVELS = ['trace', 'log', 'warn', 'error'];
 exports.bindTo = {
@@ -48,7 +48,7 @@ exports.Logger = Logger;
 exports.getSeverityState = (config) => config.split(';').reduce((severityState, param) => {
     const params = param.split('=');
     const namespace = params[0].trim();
-    const severity = +(params[1] || '').trim();
+    const severity = +params[1];
     // The following is like testing: `severity === Severity[Severity[severity]]`
     if (namespace && Severity[severity] in Severity) {
         severityState[namespace] = severity;
@@ -57,11 +57,13 @@ exports.getSeverityState = (config) => config.split(';').reduce((severityState, 
 }, {});
 const getStoredSeverityState = () => {
     try {
-        return exports.getSeverityState(localStorage.getItem('NsLogger') || '');
+        const config = localStorage.getItem('NsLogger');
+        if (config) {
+            return exports.getSeverityState(config);
+        }
     }
-    catch (e) {
-        return {};
-    }
+    catch (ignore) { } // tslint:disable-line:no-empty
+    return {};
 };
 exports.state = {
     // Note that the stored severity is only retrieved once when the script is loaded!
