@@ -164,7 +164,7 @@ that exposes the package as the global variable `NsLogger`.
 </script>
 ```
 
-You can also import the package in your code and bundle your application with `webpack` fro example or any other bundler of your choice.
+You can also import the package in your code and bundle your application with `webpack` for example or any other bundler of your choice.
 
 ## Contribute
 
