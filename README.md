@@ -32,11 +32,11 @@ Console output:
 
 The object `Severity` has the following properties:
 
-- Trace  (= 0)
-- Log    (= 1)
-- Warn   (= 2)
-- Error  (= 3)
-- Silent (= 4)
+- `Trace`  (= 0)
+- `Log`    (= 1)
+- `Warn`   (= 2)
+- `Error`  (= 3)
+- `Silent` (= 4)
 
 You can change the logger level programmatically:
 
@@ -71,7 +71,7 @@ Console output:
 ### Change default severity
 
 `NsLogger` keeps track of instantiated loggers.
-Existing loggers are NOT affected by the new default severity settings.
+Existing loggers are NOT affected by new default severity settings.
 Only fresh created loggers are affected.
 
 ```js
@@ -149,7 +149,7 @@ To get the same result as above, just enter the following line in the browser co
 localStorage.NsLogger = 'ModuleA:Feature1 = 0; ModuleA:Feature2 = 1; ModuleA:* = 2; ModuleB = 3; * = 4;';
 ```
 
-## Browser
+## Browser support
 
 You can use the script
 [https://unpkg.com/@avine/ns-logger/ns-logger.js](https://unpkg.com/@avine/ns-logger/ns-logger.js)
@@ -163,6 +163,8 @@ that exposes the package as the global variable `NsLogger`.
   logger.warn('Cool!');
 </script>
 ```
+
+You can also import the package in you code and bundle your application with `webpack` fro example or any other bundler of your choice.
 
 ## Contribute
 
