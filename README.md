@@ -151,12 +151,14 @@ localStorage.NsLogger = 'ModuleA:Feature1 = 0; ModuleA:Feature2 = 1; ModuleA:* =
 
 ## Browser support
 
+`NsLogger` supports all major browsers (including IE11).
+
 You can use the script
 [https://unpkg.com/@avine/ns-logger/ns-logger.js](https://unpkg.com/@avine/ns-logger/ns-logger.js)
 that exposes the package as the global variable `NsLogger`.
 
 ```html
-<script src="https://unpkg.com/@avine/ns-logger/ns-logger.js" type="text/javascript"></script>
+<script src="https://unpkg.com/@avine/ns-logger/ns-logger.js"></script>
 
 <script>
   const logger = NsLogger.getLogger('MyNamespace');
@@ -165,6 +167,12 @@ that exposes the package as the global variable `NsLogger`.
 ```
 
 You can also import the package in your code and bundle your application with `webpack` for example or any other bundler of your choice.
+
+```js
+import { getLogger } from 'ns-logger';
+
+// Your code...
+```
 
 ## Contribute
 

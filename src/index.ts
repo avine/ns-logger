@@ -55,7 +55,16 @@ export class Logger implements ILogger {
   set level(severity: Severity) {
     // Note that changing the `severity` programmatically will NOT update the stored severity!
     this.severity = severity;
-    Object.assign(this, loggerBuilder(this.namespace, severity));
+
+    // The short way - NOT IE11 compatible
+    // Object.assign(this, loggerBuilder(this.namespace, severity));
+
+    // The long way - IE11 compatible
+    const logger = loggerBuilder(this.namespace, severity);
+    this.trace = logger.trace;
+    this.log = logger.log;
+    this.warn = logger.warn;
+    this.error = logger.error;
   }
 }
 

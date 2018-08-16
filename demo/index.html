@@ -45,12 +45,12 @@
   </p>
 
   <script>
-    document.getElementById('set-storage').addEventListener('click', () => {
+    document.getElementById('set-storage').addEventListener('click', function() {
       localStorage.setItem('NsLogger', 'ModuleA:Feature1 = 0; ModuleA:Feature2 = 1; ModuleA:* = 2; ModuleB = 3; * = 4');
       document.location.reload();
     });
 
-    document.getElementById('remove-storage').addEventListener('click', () => {
+    document.getElementById('remove-storage').addEventListener('click', function() {
       localStorage.removeItem('NsLogger');
       document.location.reload();
     });
@@ -58,17 +58,21 @@
     document.getElementById('current-storage').innerHTML =
       'NsLogger.state.severity = ' + JSON.stringify(NsLogger.state.severity);
 
-    document.getElementById('output-logs').addEventListener('click', (event) => {
+    document.getElementById('output-logs').addEventListener('click', function(event) {
       if (event.target.nodeName !== 'BUTTON') {
         return;
       }
       const namespace = event.target.innerText;
-      const logger = NsLogger.getLogger(namespace);
 
-      logger.trace('Trace');
-      logger.log('Log');
-      logger.warn('Warn');
-      logger.error('Error');
+      try {
+        const logger = NsLogger.getLogger(namespace);
+        logger.trace('Trace');
+        logger.log('Log');
+        logger.warn('Warn');
+        logger.error('Error');
+      } catch(e) {
+        alert(e);
+      }
     });
   </script>
 </html>

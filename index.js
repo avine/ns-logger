@@ -10,54 +10,74 @@ var Severity;
     Severity[Severity["Silent"] = 4] = "Silent";
 })(Severity = exports.Severity || (exports.Severity = {}));
 // ===== Settings =====
-const settings = {
+var settings = {
     defaultSeverity: Severity.Warn,
     disabled: false,
 };
-exports.setDefaultSeverity = (severity) => { settings.defaultSeverity = severity; };
-exports.disableInProduction = () => { settings.disabled = true; };
+exports.setDefaultSeverity = function (severity) { settings.defaultSeverity = severity; };
+exports.disableInProduction = function () { settings.disabled = true; };
 // ===== Logger builder =====
-const LOG_LEVELS = ['trace', 'log', 'warn', 'error'];
+var LOG_LEVELS = ['trace', 'log', 'warn', 'error'];
 exports.bindTo = {
-    console: (level, namespace) => console[level].bind(console, `[${namespace}]`),
+    console: function (level, namespace) { return console[level].bind(console, "[" + namespace + "]"); },
     noop: function noop() { },
 };
-const loggerBuilder = (namespace, severity) => LOG_LEVELS.reduce((logger, level, index) => {
-    logger[level] = index >= severity && !settings.disabled ? exports.bindTo.console(level, namespace) : exports.bindTo.noop;
-    return logger;
-}, {});
-class Logger {
-    constructor(namespace, severity) {
+var loggerBuilder = function (namespace, severity) {
+    return LOG_LEVELS.reduce(function (logger, level, index) {
+        logger[level] = index >= severity && !settings.disabled ? exports.bindTo.console(level, namespace) : exports.bindTo.noop;
+        return logger;
+    }, {});
+};
+var Logger = /** @class */ (function () {
+    function Logger(namespace, severity) {
         this.namespace = namespace;
         this.severity = severity;
         this.level = severity;
     }
-    get name() {
-        return this.namespace;
-    }
-    get level() {
-        return this.severity;
-    }
-    set level(severity) {
-        // Note that changing the `severity` programmatically will NOT update the stored severity!
-        this.severity = severity;
-        Object.assign(this, loggerBuilder(this.namespace, severity));
-    }
-}
+    Object.defineProperty(Logger.prototype, "name", {
+        get: function () {
+            return this.namespace;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Logger.prototype, "level", {
+        get: function () {
+            return this.severity;
+        },
+        set: function (severity) {
+            // Note that changing the `severity` programmatically will NOT update the stored severity!
+            this.severity = severity;
+            // The short way - NOT IE11 compatible
+            // Object.assign(this, loggerBuilder(this.namespace, severity));
+            // The long way - IE11 compatible
+            var logger = loggerBuilder(this.namespace, severity);
+            this.trace = logger.trace;
+            this.log = logger.log;
+            this.warn = logger.warn;
+            this.error = logger.error;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Logger;
+}());
 exports.Logger = Logger;
-exports.getSeverityState = (config) => config.split(';').reduce((severityState, param) => {
-    const params = param.split('=');
-    const namespace = params[0].trim();
-    const severity = +params[1];
-    // The following is like testing: `severity === Severity[Severity[severity]]`
-    if (namespace && Severity[severity] in Severity) {
-        severityState[namespace] = severity;
-    }
-    return severityState;
-}, {});
-const getStoredSeverityState = () => {
+exports.getSeverityState = function (config) {
+    return config.split(';').reduce(function (severityState, param) {
+        var params = param.split('=');
+        var namespace = params[0].trim();
+        var severity = +params[1];
+        // The following is like testing: `severity === Severity[Severity[severity]]`
+        if (namespace && Severity[severity] in Severity) {
+            severityState[namespace] = severity;
+        }
+        return severityState;
+    }, {});
+};
+var getStoredSeverityState = function () {
     try {
-        const config = localStorage.getItem('NsLogger');
+        var config = localStorage.getItem('NsLogger');
         if (config) {
             return exports.getSeverityState(config);
         }
@@ -71,17 +91,17 @@ exports.state = {
     severity: getStoredSeverityState(),
     logger: {},
 };
-exports.cleanState = () => {
+exports.cleanState = function () {
     exports.state.severity = {};
     exports.state.logger = {};
 };
 // ===== Get severity =====
-const getSeverity = (namespace) => {
-    let severity = exports.state.severity[namespace];
+var getSeverity = function (namespace) {
+    var severity = exports.state.severity[namespace];
     if (severity === undefined) {
-        const [module, feature] = namespace.split(':');
+        var _a = namespace.split(':'), module = _a[0], feature = _a[1];
         if (feature) {
-            severity = exports.state.severity[`${module}:*`]; // Wildcard for all the features of a module
+            severity = exports.state.severity[module + ":*"]; // Wildcard for all the features of a module
         }
         if (severity === undefined) {
             severity = exports.state.severity['*']; // Wildcard for all modules (overwrite `settings.defaultSeverity`)
@@ -93,7 +113,7 @@ const getSeverity = (namespace) => {
     return severity;
 };
 // ===== Get logger =====
-exports.getLogger = (namespace) => {
+exports.getLogger = function (namespace) {
     if (exports.state.logger[namespace]) {
         return exports.state.logger[namespace];
     }

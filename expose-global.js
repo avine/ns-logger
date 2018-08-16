@@ -13,7 +13,7 @@ Fs.readFile(resolve('./index.js'), { encoding: 'utf-8' }, (err, data) => {
   }
 
   const result = UglifyJS.minify(data);
-  const code = `((exports)=>{${result.code}})(this.NsLogger=this.NsLogger||{});`;
+  const code = `(function(exports){${result.code}})(this.NsLogger=this.NsLogger||{});`;
 
   const writeFile = (path) => {
     Fs.writeFile(path, `${copyright}\n${code}`, { encoding: 'utf-8' }, (err) => {
