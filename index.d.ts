@@ -1,10 +1,13 @@
 declare type LogLevel = 'trace' | 'log' | 'warn' | 'error';
-declare type LogFn = (...args: any[]) => void;
+interface ILogFn {
+    (...args: any[]): void;
+    enabled: boolean;
+}
 interface ILogger {
-    trace: LogFn;
-    log: LogFn;
-    warn: LogFn;
-    error: LogFn;
+    trace: ILogFn;
+    log: ILogFn;
+    warn: ILogFn;
+    error: ILogFn;
 }
 export declare enum Severity {
     Trace = 0,
@@ -22,10 +25,10 @@ export declare const bindTo: {
 export declare class Logger implements ILogger {
     private namespace;
     private severity;
-    trace: LogFn;
-    log: LogFn;
-    warn: LogFn;
-    error: LogFn;
+    trace: ILogFn;
+    log: ILogFn;
+    warn: ILogFn;
+    error: ILogFn;
     constructor(namespace: string, severity: Severity);
     readonly name: string;
     level: Severity;

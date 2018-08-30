@@ -2,13 +2,16 @@
 
 type LogLevel = 'trace' | 'log' | 'warn' | 'error';
 
-type LogFn = (...args: any[]) => void;
+interface ILogFn {
+  (...args: any[]): void;
+  enabled: boolean;
+}
 
 interface ILogger {
-  trace: LogFn;
-  log: LogFn;
-  warn: LogFn;
-  error: LogFn;
+  trace: ILogFn;
+  log: ILogFn;
+  warn: ILogFn;
+  error: ILogFn;
 }
 
 export enum Severity { Trace, Log, Warn, Error, Silent }
@@ -34,15 +37,17 @@ export const bindTo = {
 
 const loggerBuilder = (namespace: string, severity: Severity) =>
   LOG_LEVELS.reduce((logger, level, index) => {
-    logger[level] = index >= severity && !settings.disabled ? bindTo.console(level, namespace) : bindTo.noop;
+    const enabled = index >= severity && !settings.disabled;
+    logger[level] = enabled ? bindTo.console(level, namespace) : bindTo.noop;
+    Object.defineProperty(logger[level] as ILogFn, 'enabled', { value: enabled, writable: false });
     return logger;
   }, {} as ILogger);
 
 export class Logger implements ILogger {
-  trace!: LogFn;
-  log!: LogFn;
-  warn!: LogFn;
-  error!: LogFn;
+  trace!: ILogFn;
+  log!: ILogFn;
+  warn!: ILogFn;
+  error!: ILogFn;
   constructor(private namespace: string, private severity: Severity) {
     this.level = severity;
   }

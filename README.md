@@ -28,6 +28,30 @@ logger.error('Error visible');
 [MyNamespace] Error visible
 ```
 
+### Check whether a logger level is enabled
+
+By checking the `enabled` readonly property, you can determine whether or not a logger level is enabled.
+
+```js
+import { getLogger } from 'ns-logger';
+
+const logger = getLogger('MyNamespace');
+
+console.log('Trace:', logger.trace.enabled);
+console.log('Log:', logger.log.enabled);
+console.log('Warn:', logger.warn.enabled);
+console.log('Error:', logger.error.enabled);
+```
+
+*Console output:*
+
+```console
+Trace: false
+Log: false
+Warn: true
+Error: true
+```
+
 ### Change severity
 
 The object `Severity` has the following properties:

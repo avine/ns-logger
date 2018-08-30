@@ -42,6 +42,40 @@ describe('NsLogger', () => {
     expect(b2).to.equal(b1);
   });
 
+  it('should check enabled logger', () => {
+    const a = getLogger('ModuleA');
+
+    // a.level = Severity.Warn; // This is the default severity
+    expect(a.trace.enabled).to.equal(false);
+    expect(a.log.enabled).to.equal(false);
+    expect(a.warn.enabled).to.equal(true);
+    expect(a.error.enabled).to.equal(true);
+
+    a.level = Severity.Trace;
+    expect(a.trace.enabled).to.equal(true);
+    expect(a.log.enabled).to.equal(true);
+    expect(a.warn.enabled).to.equal(true);
+    expect(a.error.enabled).to.equal(true);
+
+    a.level = Severity.Log;
+    expect(a.trace.enabled).to.equal(false);
+    expect(a.log.enabled).to.equal(true);
+    expect(a.warn.enabled).to.equal(true);
+    expect(a.error.enabled).to.equal(true);
+
+    a.level = Severity.Error;
+    expect(a.trace.enabled).to.equal(false);
+    expect(a.log.enabled).to.equal(false);
+    expect(a.warn.enabled).to.equal(false);
+    expect(a.error.enabled).to.equal(true);
+
+    a.level = Severity.Silent;
+    expect(a.trace.enabled).to.equal(false);
+    expect(a.log.enabled).to.equal(false);
+    expect(a.warn.enabled).to.equal(false);
+    expect(a.error.enabled).to.equal(false);
+  });
+
   it('should change the default severity', () => {
     const a = getLogger('ModuleA');
 
