@@ -44,7 +44,7 @@ export const bindTo = {
 const loggerBuilder = (namespace: string, level: Level) =>
   SEVERITIES.reduce((logger, severity, index) => {
     const enabled = index >= level && !settings.disabled;
-    logger[severity] = enabled ? bindTo.console(severity, namespace) : bindTo.noop;
+    logger[severity] = (enabled ? bindTo.console(severity, namespace) : bindTo.noop) as IConsole;
     Object.defineProperty(logger[severity] as IConsole, 'enabled', { value: enabled, writable: false });
     return logger;
   }, {} as ILogger);

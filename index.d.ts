@@ -25,7 +25,7 @@ export declare enum Level {
 export declare const setDefaultLevel: (level: Level) => void;
 export declare const disableInProduction: () => void;
 export declare const bindTo: {
-    console: (severity: Severity, namespace: string) => any;
+    console: (severity: Severity, namespace: string) => (...args: any[]) => void;
     noop: () => void;
 };
 export declare class Logger implements ILogger {

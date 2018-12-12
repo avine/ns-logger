@@ -28,7 +28,7 @@ exports.bindTo = {
 var loggerBuilder = function (namespace, level) {
     return SEVERITIES.reduce(function (logger, severity, index) {
         var enabled = index >= level && !settings.disabled;
-        logger[severity] = enabled ? exports.bindTo.console(severity, namespace) : exports.bindTo.noop;
+        logger[severity] = (enabled ? exports.bindTo.console(severity, namespace) : exports.bindTo.noop);
         Object.defineProperty(logger[severity], 'enabled', { value: enabled, writable: false });
         return logger;
     }, {});
