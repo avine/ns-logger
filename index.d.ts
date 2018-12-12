@@ -2,8 +2,8 @@
  * Severity of the message
  */
 declare type Severity = 'trace' | 'log' | 'warn' | 'error';
-interface IConsole {
-    (...args: any[]): void;
+declare type ConsoleBase = (...args: any[]) => void;
+interface IConsole extends ConsoleBase {
     enabled: boolean;
 }
 interface ILogger {
@@ -13,7 +13,7 @@ interface ILogger {
     error: IConsole;
 }
 /**
- * Minimum level of displayed messages
+ * Minimum severity level of displayed messages
  */
 export declare enum Level {
     Trace = 0,
@@ -25,8 +25,8 @@ export declare enum Level {
 export declare const setDefaultLevel: (level: Level) => void;
 export declare const disableInProduction: () => void;
 export declare const bindTo: {
-    console: (severity: Severity, namespace: string) => (...args: any[]) => void;
-    noop: () => void;
+    consoleFactory: (severity: Severity, namespace: string) => ConsoleBase;
+    noop: ConsoleBase;
 };
 export declare class Logger implements ILogger {
     private ns;

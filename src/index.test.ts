@@ -99,7 +99,7 @@ describe('NsLogger', () => {
   });
 
   it ('should change level programmatically', () => {
-    const consoleSpy = spy(bindTo, 'console');
+    const consoleSpy = spy(bindTo, 'consoleFactory');
 
     // By default the logger only output "warn" and "error".
     const a = getLogger('ModuleA');

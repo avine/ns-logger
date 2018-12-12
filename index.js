@@ -2,7 +2,7 @@
 // ===== Model =====
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * Minimum level of displayed messages
+ * Minimum severity level of displayed messages
  */
 var Level;
 (function (Level) {
@@ -21,14 +21,20 @@ exports.setDefaultLevel = function (level) { settings.defaultLevel = level; };
 exports.disableInProduction = function () { settings.disabled = true; };
 // ===== Logger builder =====
 var SEVERITIES = ['trace', 'log', 'warn', 'error'];
-exports.bindTo = {
-    console: function (severity, namespace) { return console[severity].bind(console, "[" + namespace + "]"); },
-    noop: function noop() { },
+var consoleFactory = function (severity, namespace) {
+    return console[severity].bind(console, "[" + namespace + "]");
 };
+var noop = function () { }; // tslint:disable-line:no-empty
+exports.bindTo = { consoleFactory: consoleFactory, noop: noop };
 var loggerBuilder = function (namespace, level) {
     return SEVERITIES.reduce(function (logger, severity, index) {
         var enabled = index >= level && !settings.disabled;
-        logger[severity] = (enabled ? exports.bindTo.console(severity, namespace) : exports.bindTo.noop);
+        logger[severity] = enabled
+            ? exports.bindTo.consoleFactory(severity, namespace)
+            : exports.bindTo.noop;
+        // The short way - NOT IE11 compatible
+        // Object.assign(logger[severity], { get enabled() { return enabled; } });
+        // The long way - IE11 compatible
         Object.defineProperty(logger[severity], 'enabled', { value: enabled, writable: false });
         return logger;
     }, {});

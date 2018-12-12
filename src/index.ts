@@ -5,10 +5,8 @@
  */
 type Severity = 'trace' | 'log' | 'warn' | 'error';
 
-interface IConsole {
-  (...args: any[]): void;
-  enabled: boolean;
-}
+type ConsoleBase = (...args: any[]) => void;
+interface IConsole extends ConsoleBase { enabled: boolean; }
 
 interface ILogger {
   trace: IConsole;
@@ -18,7 +16,7 @@ interface ILogger {
 }
 
 /**
- * Minimum level of displayed messages
+ * Minimum severity level of displayed messages
  */
 export enum Level { Trace, Log, Warn, Error, Silent }
 
@@ -36,16 +34,26 @@ export const disableInProduction = () => { settings.disabled = true; };
 
 const SEVERITIES: Severity[] = ['trace', 'log', 'warn', 'error'];
 
-export const bindTo = {
-  console: (severity: Severity, namespace: string) => console[severity].bind(console, `[${namespace}]`),
-  noop: function noop() {}, // tslint:disable-line:no-empty
-};
+const consoleFactory = (severity: Severity, namespace: string) =>
+  console[severity].bind(console, `[${namespace}]`) as ConsoleBase;
+
+const noop: ConsoleBase = () => {}; // tslint:disable-line:no-empty
+
+export const bindTo = { consoleFactory, noop };
 
 const loggerBuilder = (namespace: string, level: Level) =>
   SEVERITIES.reduce((logger, severity, index) => {
     const enabled = index >= level && !settings.disabled;
-    logger[severity] = (enabled ? bindTo.console(severity, namespace) : bindTo.noop) as IConsole;
-    Object.defineProperty(logger[severity] as IConsole, 'enabled', { value: enabled, writable: false });
+    logger[severity] = enabled
+      ? bindTo.consoleFactory(severity, namespace) as IConsole
+      : bindTo.noop as IConsole;
+
+    // The short way - NOT IE11 compatible
+    // Object.assign(logger[severity], { get enabled() { return enabled; } });
+
+    // The long way - IE11 compatible
+    Object.defineProperty(logger[severity], 'enabled', { value: enabled, writable: false });
+
     return logger;
   }, {} as ILogger);
 
