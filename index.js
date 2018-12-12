@@ -1,59 +1,62 @@
 "use strict";
 // ===== Model =====
 Object.defineProperty(exports, "__esModule", { value: true });
-var Severity;
-(function (Severity) {
-    Severity[Severity["Trace"] = 0] = "Trace";
-    Severity[Severity["Log"] = 1] = "Log";
-    Severity[Severity["Warn"] = 2] = "Warn";
-    Severity[Severity["Error"] = 3] = "Error";
-    Severity[Severity["Silent"] = 4] = "Silent";
-})(Severity = exports.Severity || (exports.Severity = {}));
+/**
+ * Minimum level of displayed messages
+ */
+var Level;
+(function (Level) {
+    Level[Level["Trace"] = 0] = "Trace";
+    Level[Level["Log"] = 1] = "Log";
+    Level[Level["Warn"] = 2] = "Warn";
+    Level[Level["Error"] = 3] = "Error";
+    Level[Level["Silent"] = 4] = "Silent";
+})(Level = exports.Level || (exports.Level = {}));
 // ===== Settings =====
 var settings = {
-    defaultSeverity: Severity.Warn,
+    defaultLevel: Level.Warn,
     disabled: false,
 };
-exports.setDefaultSeverity = function (severity) { settings.defaultSeverity = severity; };
+exports.setDefaultLevel = function (level) { settings.defaultLevel = level; };
 exports.disableInProduction = function () { settings.disabled = true; };
 // ===== Logger builder =====
-var LOG_LEVELS = ['trace', 'log', 'warn', 'error'];
+var SEVERITIES = ['trace', 'log', 'warn', 'error'];
 exports.bindTo = {
-    console: function (level, namespace) { return console[level].bind(console, "[" + namespace + "]"); },
+    console: function (severity, namespace) { return console[severity].bind(console, "[" + namespace + "]"); },
     noop: function noop() { },
 };
-var loggerBuilder = function (namespace, severity) {
-    return LOG_LEVELS.reduce(function (logger, level, index) {
-        var enabled = index >= severity && !settings.disabled;
-        logger[level] = enabled ? exports.bindTo.console(level, namespace) : exports.bindTo.noop;
-        Object.defineProperty(logger[level], 'enabled', { value: enabled, writable: false });
+var loggerBuilder = function (namespace, level) {
+    return SEVERITIES.reduce(function (logger, severity, index) {
+        var enabled = index >= level && !settings.disabled;
+        logger[severity] = enabled ? exports.bindTo.console(severity, namespace) : exports.bindTo.noop;
+        Object.defineProperty(logger[severity], 'enabled', { value: enabled, writable: false });
         return logger;
     }, {});
 };
 var Logger = /** @class */ (function () {
-    function Logger(namespace, severity) {
-        this.namespace = namespace;
-        this.severity = severity;
-        this.level = severity;
+    function Logger(ns, lvl) {
+        this.ns = ns;
+        this.lvl = lvl;
+        this.level = lvl;
     }
-    Object.defineProperty(Logger.prototype, "name", {
+    Object.defineProperty(Logger.prototype, "namespace", {
         get: function () {
-            return this.namespace;
+            return this.ns;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Logger.prototype, "level", {
         get: function () {
-            return this.severity;
+            return this.lvl;
         },
-        set: function (severity) {
-            // Note that changing the `severity` programmatically will NOT update the stored severity!
-            this.severity = severity;
+        set: function (level) {
+            // Note that changing the `level` programmatically will NOT update the stored level!
+            this.lvl = level;
             // The short way - NOT IE11 compatible
-            // Object.assign(this, loggerBuilder(this.namespace, severity));
+            // Object.assign(this, loggerBuilder(this.ns, level));
             // The long way - IE11 compatible
-            var logger = loggerBuilder(this.namespace, severity);
+            var logger = loggerBuilder(this.ns, level);
             this.trace = logger.trace;
             this.log = logger.log;
             this.warn = logger.warn;
@@ -65,59 +68,59 @@ var Logger = /** @class */ (function () {
     return Logger;
 }());
 exports.Logger = Logger;
-exports.getSeverityState = function (config) {
-    return config.split(';').reduce(function (severityState, param) {
+exports.getLevelState = function (config) {
+    return config.split(';').reduce(function (levelState, param) {
         var params = param.split('=');
         var namespace = params[0].trim();
-        var severity = +params[1];
-        // The following is like testing: `severity === Severity[Severity[severity]]`
-        if (namespace && Severity[severity] in Severity) {
-            severityState[namespace] = severity;
+        var level = +params[1];
+        // The following is like testing: `level === Level[Level[level]]`
+        if (namespace && Level[level] in Level) {
+            levelState[namespace] = level;
         }
-        return severityState;
+        return levelState;
     }, {});
 };
-var getStoredSeverityState = function () {
+var getStoredLevelState = function () {
     try {
         var config = localStorage.getItem('NsLogger');
         if (config) {
-            return exports.getSeverityState(config);
+            return exports.getLevelState(config);
         }
     }
     catch (ignore) { } // tslint:disable-line:no-empty
     return {};
 };
 exports.state = {
-    // Note that the stored severity is only retrieved once when the script is loaded!
+    // Note that the stored level is only retrieved once when the script is loaded!
     // When you set `localStorage.NsLogger` from the console, you have to reload the page to reflect the changes.
-    severity: getStoredSeverityState(),
+    level: getStoredLevelState(),
     logger: {},
 };
 exports.cleanState = function () {
-    exports.state.severity = {};
+    exports.state.level = {};
     exports.state.logger = {};
 };
-// ===== Get severity =====
-var getSeverity = function (namespace) {
-    var severity = exports.state.severity[namespace];
-    if (severity === undefined) {
+// ===== Get level =====
+var getLevel = function (namespace) {
+    var level = exports.state.level[namespace];
+    if (level === undefined) {
         var _a = namespace.split(':'), module = _a[0], feature = _a[1];
         if (feature) {
-            severity = exports.state.severity[module + ":*"]; // Wildcard for all the features of a module
+            level = exports.state.level[module + ":*"]; // Wildcard for all the features of a module
         }
-        if (severity === undefined) {
-            severity = exports.state.severity['*']; // Wildcard for all modules (overwrite `settings.defaultSeverity`)
+        if (level === undefined) {
+            level = exports.state.level['*']; // Wildcard for all modules (overwrite `settings.defaultLevel`)
         }
-        if (severity === undefined) {
-            severity = settings.defaultSeverity;
+        if (level === undefined) {
+            level = settings.defaultLevel;
         }
     }
-    return severity;
+    return level;
 };
 // ===== Get logger =====
 exports.getLogger = function (namespace) {
     if (exports.state.logger[namespace]) {
         return exports.state.logger[namespace];
     }
-    return exports.state.logger[namespace] = new Logger(namespace, getSeverity(namespace));
+    return exports.state.logger[namespace] = new Logger(namespace, getLevel(namespace));
 };

@@ -1,71 +1,77 @@
 // ===== Model =====
 
-type LogLevel = 'trace' | 'log' | 'warn' | 'error';
+/**
+ * Severity of the message
+ */
+type Severity = 'trace' | 'log' | 'warn' | 'error';
 
-interface ILogFn {
+interface IConsole {
   (...args: any[]): void;
   enabled: boolean;
 }
 
 interface ILogger {
-  trace: ILogFn;
-  log: ILogFn;
-  warn: ILogFn;
-  error: ILogFn;
+  trace: IConsole;
+  log: IConsole;
+  warn: IConsole;
+  error: IConsole;
 }
 
-export enum Severity { Trace, Log, Warn, Error, Silent }
+/**
+ * Minimum level of displayed messages
+ */
+export enum Level { Trace, Log, Warn, Error, Silent }
 
 // ===== Settings =====
 
 const settings = {
-  defaultSeverity: Severity.Warn,
+  defaultLevel: Level.Warn,
   disabled: false,
 };
 
-export const setDefaultSeverity = (severity: Severity) => { settings.defaultSeverity = severity; };
+export const setDefaultLevel = (level: Level) => { settings.defaultLevel = level; };
 export const disableInProduction = () => { settings.disabled = true; };
 
 // ===== Logger builder =====
 
-const LOG_LEVELS: LogLevel[] = ['trace', 'log', 'warn', 'error'];
+const SEVERITIES: Severity[] = ['trace', 'log', 'warn', 'error'];
 
 export const bindTo = {
-  console: (level: LogLevel, namespace: string) => console[level].bind(console, `[${namespace}]`),
+  console: (severity: Severity, namespace: string) => console[severity].bind(console, `[${namespace}]`),
   noop: function noop() {}, // tslint:disable-line:no-empty
 };
 
-const loggerBuilder = (namespace: string, severity: Severity) =>
-  LOG_LEVELS.reduce((logger, level, index) => {
-    const enabled = index >= severity && !settings.disabled;
-    logger[level] = enabled ? bindTo.console(level, namespace) : bindTo.noop;
-    Object.defineProperty(logger[level] as ILogFn, 'enabled', { value: enabled, writable: false });
+const loggerBuilder = (namespace: string, level: Level) =>
+  SEVERITIES.reduce((logger, severity, index) => {
+    const enabled = index >= level && !settings.disabled;
+    logger[severity] = enabled ? bindTo.console(severity, namespace) : bindTo.noop;
+    Object.defineProperty(logger[severity] as IConsole, 'enabled', { value: enabled, writable: false });
     return logger;
   }, {} as ILogger);
 
 export class Logger implements ILogger {
-  trace!: ILogFn;
-  log!: ILogFn;
-  warn!: ILogFn;
-  error!: ILogFn;
-  constructor(private namespace: string, private severity: Severity) {
-    this.level = severity;
+  trace!: IConsole;
+  log!: IConsole;
+  warn!: IConsole;
+  error!: IConsole;
+  constructor(private ns: string, private lvl: Level) {
+    this.level = lvl;
   }
-  get name() {
-    return this.namespace;
+  get namespace() {
+    return this.ns;
   }
   get level() {
-    return this.severity;
+    return this.lvl;
   }
-  set level(severity: Severity) {
-    // Note that changing the `severity` programmatically will NOT update the stored severity!
-    this.severity = severity;
+  set level(level: Level) {
+    // Note that changing the `level` programmatically will NOT update the stored level!
+    this.lvl = level;
 
     // The short way - NOT IE11 compatible
-    // Object.assign(this, loggerBuilder(this.namespace, severity));
+    // Object.assign(this, loggerBuilder(this.ns, level));
 
     // The long way - IE11 compatible
-    const logger = loggerBuilder(this.namespace, severity);
+    const logger = loggerBuilder(this.ns, level);
     this.trace = logger.trace;
     this.log = logger.log;
     this.warn = logger.warn;
@@ -73,30 +79,30 @@ export class Logger implements ILogger {
   }
 }
 
-// ===== Severity state =====
+// ===== Level state =====
 
-interface ISeverityState { [namespace: string]: Severity; }
+interface ILevelState { [namespace: string]: Level; }
 
-export const getSeverityState = (config: string) =>
-  config.split(';').reduce((severityState, param) => {
+export const getLevelState = (config: string) =>
+  config.split(';').reduce((levelState, param) => {
     const params = param.split('=');
     const namespace = params[0].trim();
-    const severity = +params[1];
-    // The following is like testing: `severity === Severity[Severity[severity]]`
-    if (namespace && Severity[severity] in Severity) {
-      severityState[namespace] = severity as Severity;
+    const level = +params[1];
+    // The following is like testing: `level === Level[Level[level]]`
+    if (namespace && Level[level] in Level) {
+      levelState[namespace] = level as Level;
     }
-    return severityState;
-  }, {} as ISeverityState);
+    return levelState;
+  }, {} as ILevelState);
 
-const getStoredSeverityState = () => {
+const getStoredLevelState = () => {
   try {
     const config = localStorage.getItem('NsLogger');
     if (config) {
-      return getSeverityState(config);
+      return getLevelState(config);
     }
   } catch (ignore) {} // tslint:disable-line:no-empty
-  return {} as ISeverityState;
+  return {} as ILevelState;
 };
 
 // ===== Logger state =====
@@ -106,40 +112,40 @@ interface ILoggerState { [namespace: string]: Logger; }
 // ===== Global state =====
 
 export interface IState {
-  severity: ISeverityState;
+  level: ILevelState;
   logger: ILoggerState;
 }
 
 export const state: IState = {
-  // Note that the stored severity is only retrieved once when the script is loaded!
+  // Note that the stored level is only retrieved once when the script is loaded!
   // When you set `localStorage.NsLogger` from the console, you have to reload the page to reflect the changes.
-  severity: getStoredSeverityState(),
+  level: getStoredLevelState(),
 
   logger: {},
 };
 
 export const cleanState = () => {
-  state.severity = {};
+  state.level = {};
   state.logger = {};
 };
 
-// ===== Get severity =====
+// ===== Get level =====
 
-const getSeverity = (namespace: string) => {
-  let severity = state.severity[namespace];
-  if (severity === undefined) {
+const getLevel = (namespace: string) => {
+  let level = state.level[namespace];
+  if (level === undefined) {
     const [module, feature] = namespace.split(':');
     if (feature) {
-      severity = state.severity[`${module}:*`]; // Wildcard for all the features of a module
+      level = state.level[`${module}:*`]; // Wildcard for all the features of a module
     }
-    if (severity === undefined) {
-      severity = state.severity['*']; // Wildcard for all modules (overwrite `settings.defaultSeverity`)
+    if (level === undefined) {
+      level = state.level['*']; // Wildcard for all modules (overwrite `settings.defaultLevel`)
     }
-    if (severity === undefined) {
-      severity = settings.defaultSeverity;
+    if (level === undefined) {
+      level = settings.defaultLevel;
     }
   }
-  return severity;
+  return level;
 };
 
 // ===== Get logger =====
@@ -148,5 +154,5 @@ export const getLogger = (namespace: string) => {
   if (state.logger[namespace]) {
     return state.logger[namespace];
   }
-  return state.logger[namespace] = new Logger(namespace, getSeverity(namespace));
+  return state.logger[namespace] = new Logger(namespace, getLevel(namespace));
 };

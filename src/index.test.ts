@@ -3,10 +3,10 @@
 import {
   bindTo,
   cleanState,
+  getLevelState,
   getLogger,
-  getSeverityState,
-  setDefaultSeverity,
-  Severity,
+  Level,
+  setDefaultLevel,
   state,
 } from './index';
 
@@ -19,7 +19,7 @@ chai.use(sinonChai);
 
 describe('NsLogger', () => {
   beforeEach(() => {
-    setDefaultSeverity(Severity.Warn);
+    setDefaultLevel(Level.Warn);
     cleanState();
   });
 
@@ -27,9 +27,9 @@ describe('NsLogger', () => {
     const a1 = getLogger('ModuleA');
     const b1 = getLogger('ModuleB');
 
-    // Check logger name
-    expect(a1.name).to.equal('ModuleA');
-    expect(b1.name).to.equal('ModuleB');
+    // Check logger namespace
+    expect(a1.namespace).to.equal('ModuleA');
+    expect(b1.namespace).to.equal('ModuleB');
 
     expect(a1).not.to.equal(b1);
 
@@ -45,60 +45,60 @@ describe('NsLogger', () => {
   it('should check enabled logger', () => {
     const a = getLogger('ModuleA');
 
-    // a.level = Severity.Warn; // This is the default severity
+    // a.level = Level.Warn; // This is the default level
     expect(a.trace.enabled).to.equal(false);
     expect(a.log.enabled).to.equal(false);
     expect(a.warn.enabled).to.equal(true);
     expect(a.error.enabled).to.equal(true);
 
-    a.level = Severity.Trace;
+    a.level = Level.Trace;
     expect(a.trace.enabled).to.equal(true);
     expect(a.log.enabled).to.equal(true);
     expect(a.warn.enabled).to.equal(true);
     expect(a.error.enabled).to.equal(true);
 
-    a.level = Severity.Log;
+    a.level = Level.Log;
     expect(a.trace.enabled).to.equal(false);
     expect(a.log.enabled).to.equal(true);
     expect(a.warn.enabled).to.equal(true);
     expect(a.error.enabled).to.equal(true);
 
-    a.level = Severity.Error;
+    a.level = Level.Error;
     expect(a.trace.enabled).to.equal(false);
     expect(a.log.enabled).to.equal(false);
     expect(a.warn.enabled).to.equal(false);
     expect(a.error.enabled).to.equal(true);
 
-    a.level = Severity.Silent;
+    a.level = Level.Silent;
     expect(a.trace.enabled).to.equal(false);
     expect(a.log.enabled).to.equal(false);
     expect(a.warn.enabled).to.equal(false);
     expect(a.error.enabled).to.equal(false);
   });
 
-  it('should change the default severity', () => {
+  it('should change the default level', () => {
     const a = getLogger('ModuleA');
 
-    setDefaultSeverity(Severity.Log);
+    setDefaultLevel(Level.Log);
     const b = getLogger('ModuleB');
 
-    expect(a.level).to.equal(2); // = Severity.Warn
-    expect(b.level).to.equal(1); // = Severity.Log
+    expect(a.level).to.equal(2); // = Level.Warn
+    expect(b.level).to.equal(1); // = Level.Log
 
-    setDefaultSeverity(Severity.Error);
+    setDefaultLevel(Level.Error);
     const aCopy = getLogger('ModuleA');
     const bCopy = getLogger('ModuleB');
     const c = getLogger('ModuleC');
 
-    // Loggers that already exists are NOT affected by the new default severity settings.
-    expect(aCopy.level).to.equal(2); // = Severity.Warn
-    expect(bCopy.level).to.equal(1); // = Severity.Log
+    // Loggers that already exists are NOT affected by the new default level settings.
+    expect(aCopy.level).to.equal(2); // = Level.Warn
+    expect(bCopy.level).to.equal(1); // = Level.Log
 
-    // Only newly created loggers are affected by the new default severity settings.
-    expect(c.level).to.equal(3); // = Severity.Error
+    // Only newly created loggers are affected by the new default level settings.
+    expect(c.level).to.equal(3); // = Level.Error
   });
 
-  it ('should change severity programmatically', () => {
+  it ('should change level programmatically', () => {
     const consoleSpy = spy(bindTo, 'console');
 
     // By default the logger only output "warn" and "error".
@@ -148,14 +148,14 @@ describe('NsLogger', () => {
     expect(consoleSpy.callCount).to.equal(12);
   });
 
-  it('should parse severity state from string', () => {
-    expect(getSeverityState(
+  it('should parse level state from string', () => {
+    expect(getLevelState(
       'ModuleA:Feature1= 0;' +
       'ModuleA:Feature2 =1;' +
       'ModuleA:* = 2;' +
       ' ModuleB = 3 ; ' +
       '* = 4;' +
-      'ModuleC = 5', // Invalid severity level!
+      'ModuleC = 5', // Invalid level!
     )).to.eql({
       'ModuleA:Feature1': 0,
       'ModuleA:Feature2': 1,
@@ -165,8 +165,8 @@ describe('NsLogger', () => {
     });
   });
 
-  it('should use severity state to set logger level', () => {
-    state.severity = {
+  it('should use level state to set logger level', () => {
+    state.level = {
       'ModuleA:Feature1': 0,
       'ModuleA:Feature2': 1,
       'ModuleA:*': 2,

@@ -1,47 +1,53 @@
-declare type LogLevel = 'trace' | 'log' | 'warn' | 'error';
-interface ILogFn {
+/**
+ * Severity of the message
+ */
+declare type Severity = 'trace' | 'log' | 'warn' | 'error';
+interface IConsole {
     (...args: any[]): void;
     enabled: boolean;
 }
 interface ILogger {
-    trace: ILogFn;
-    log: ILogFn;
-    warn: ILogFn;
-    error: ILogFn;
+    trace: IConsole;
+    log: IConsole;
+    warn: IConsole;
+    error: IConsole;
 }
-export declare enum Severity {
+/**
+ * Minimum level of displayed messages
+ */
+export declare enum Level {
     Trace = 0,
     Log = 1,
     Warn = 2,
     Error = 3,
     Silent = 4
 }
-export declare const setDefaultSeverity: (severity: Severity) => void;
+export declare const setDefaultLevel: (level: Level) => void;
 export declare const disableInProduction: () => void;
 export declare const bindTo: {
-    console: (level: LogLevel, namespace: string) => any;
+    console: (severity: Severity, namespace: string) => any;
     noop: () => void;
 };
 export declare class Logger implements ILogger {
-    private namespace;
-    private severity;
-    trace: ILogFn;
-    log: ILogFn;
-    warn: ILogFn;
-    error: ILogFn;
-    constructor(namespace: string, severity: Severity);
-    readonly name: string;
-    level: Severity;
+    private ns;
+    private lvl;
+    trace: IConsole;
+    log: IConsole;
+    warn: IConsole;
+    error: IConsole;
+    constructor(ns: string, lvl: Level);
+    readonly namespace: string;
+    level: Level;
 }
-interface ISeverityState {
-    [namespace: string]: Severity;
+interface ILevelState {
+    [namespace: string]: Level;
 }
-export declare const getSeverityState: (config: string) => ISeverityState;
+export declare const getLevelState: (config: string) => ILevelState;
 interface ILoggerState {
     [namespace: string]: Logger;
 }
 export interface IState {
-    severity: ISeverityState;
+    level: ILevelState;
     logger: ILoggerState;
 }
 export declare const state: IState;
