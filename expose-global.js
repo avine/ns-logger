@@ -23,5 +23,5 @@ Fs.readFile(resolve('./index.js'), { encoding: 'utf-8' }, (err, data) => {
     });
   };
   writeFile(resolve('./ns-logger.js'));
-  writeFile(resolve('./demo/ns-logger.js'));
+  writeFile(resolve('./docs/ns-logger.js'));
 });

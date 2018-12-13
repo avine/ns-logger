@@ -86,13 +86,13 @@ describe('NsLogger', () => {
     expect(b.level).to.equal(1); // = Level.Log
 
     setDefaultLevel(Level.Error);
-    const aCopy = getLogger('ModuleA');
-    const bCopy = getLogger('ModuleB');
+    const aAlias = getLogger('ModuleA');
+    const bAlias = getLogger('ModuleB');
     const c = getLogger('ModuleC');
 
     // Loggers that already exists are NOT affected by the new default level settings.
-    expect(aCopy.level).to.equal(2); // = Level.Warn
-    expect(bCopy.level).to.equal(1); // = Level.Log
+    expect(aAlias.level).to.equal(2); // = Level.Warn
+    expect(bAlias.level).to.equal(1); // = Level.Log
 
     // Only newly created loggers are affected by the new default level settings.
     expect(c.level).to.equal(3); // = Level.Error
