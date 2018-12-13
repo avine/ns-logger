@@ -196,6 +196,8 @@ import { getLogger } from 'ns-logger';
 // Your code...
 ```
 
+For a live preview, check out this [demo](https://avine.github.io/ns-logger/) in your favorite browser.
+
 ## Contribute
 
 `NsLogger` is written in TypeScript, and that's the fun part.
