@@ -5,8 +5,10 @@
  */
 type Severity = 'trace' | 'log' | 'warn' | 'error';
 
-type ConsoleBase = (...args: any[]) => void;
-interface IConsole extends ConsoleBase { enabled: boolean; }
+interface IConsole {
+  (...args: any[]): void;
+  enabled: boolean;
+}
 
 interface ILogger {
   trace: IConsole;
@@ -34,10 +36,9 @@ export const disableInProduction = () => { settings.disabled = true; };
 
 const SEVERITIES: Severity[] = ['trace', 'log', 'warn', 'error'];
 
-const consoleFactory = (severity: Severity, namespace: string) =>
-  console[severity].bind(console, `[${namespace}]`) as ConsoleBase;
+const consoleFactory = (severity: Severity, namespace: string) => console[severity].bind(console, `[${namespace}]`);
 
-const noop: ConsoleBase = () => {}; // tslint:disable-line:no-empty
+function noop() {} // tslint:disable-line:no-empty
 
 export const bindTo = { consoleFactory, noop };
 

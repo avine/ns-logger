@@ -21,10 +21,8 @@ exports.setDefaultLevel = function (level) { settings.defaultLevel = level; };
 exports.disableInProduction = function () { settings.disabled = true; };
 // ===== Logger builder =====
 var SEVERITIES = ['trace', 'log', 'warn', 'error'];
-var consoleFactory = function (severity, namespace) {
-    return console[severity].bind(console, "[" + namespace + "]");
-};
-var noop = function () { }; // tslint:disable-line:no-empty
+var consoleFactory = function (severity, namespace) { return console[severity].bind(console, "[" + namespace + "]"); };
+function noop() { } // tslint:disable-line:no-empty
 exports.bindTo = { consoleFactory: consoleFactory, noop: noop };
 var loggerBuilder = function (namespace, level) {
     return SEVERITIES.reduce(function (logger, severity, index) {
