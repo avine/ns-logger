@@ -1,6 +1,6 @@
 # ns-logger
 
-Logger with namespaces for node and browser
+Logger with namespace support for node and browser
 
 [![Build Status](https://travis-ci.org/avine/ns-logger.svg?branch=master)](https://travis-ci.org/avine/ns-logger)
 
@@ -8,7 +8,7 @@ Logger with namespaces for node and browser
 
 ### Get logger
 
-By default, only `warn` and `error` levels are logged.
+By default, only `warn` and `error` severities are logged.
 
 ```js
 import { getLogger } from 'ns-logger';
@@ -52,9 +52,9 @@ Warn: true
 Error: true
 ```
 
-### Change severity
+### Change severity level that is displayed
 
-The object `Severity` has the following properties:
+The enum `Level` has the following properties:
 
 - `Trace`  (= 0)
 - `Log`    (= 1)
@@ -65,18 +65,18 @@ The object `Severity` has the following properties:
 You can change the logger level programmatically:
 
 ```js
-import { getLogger, Severity } from 'ns-logger';
+import { getLogger, Level } from 'ns-logger';
 
 const logger = getLogger('MyNamespace');
 
-logger.level = Severity.Log; // Using Severity object
+logger.level = Level.Log; // Using Level enum
 
 logger.trace('Trace hidden');
-logger.log('Now Log visible!');
+logger.log('Log NOW visible!');
 logger.warn('Warn visible');
 logger.error('Error visible');
 
-logger.level = 4; // Using number
+logger.level = 4; // Using literal number
 
 logger.trace('Trace hidden...');
 logger.log('Log hidden...');
@@ -87,60 +87,60 @@ logger.error('Error hidden...');
 *Console output:*
 
 ```console
-[MyNamespace] Now Log visible!
+[MyNamespace] Log NOW visible!
 [MyNamespace] Warn visible
 [MyNamespace] Error visible
 ```
 
-### Change default severity
+### Change default level
 
 `NsLogger` keeps track of instantiated loggers.
-Existing loggers are NOT affected by new default severity settings.
+Existing loggers are NOT affected by new default level settings.
 Only fresh created loggers are affected.
 
 ```js
-import { getLogger, setDefaultSeverity, Severity } from 'ns-logger';
+import { getLogger, setDefaultLevel, Level } from 'ns-logger';
 
-const a = getLogger('NamespaceA'); // a.level === Severity.Warn
+const a = getLogger('NamespaceA'); // a.level === Level.Warn
 
-setDefaultSeverity(Severity.Log);
+setDefaultLevel(Level.Log);
 
-const b = getLogger('NamespaceB'); // b.level === Severity.Log
+const b = getLogger('NamespaceB'); // b.level === Level.Log
 
-setDefaultSeverity(Severity.Error);
+setDefaultLevel(Level.Error);
 
-const aCopy = getLogger('NamespaceA'); // a.level is still Severity.Warn
-const bCopy = getLogger('NamespaceB'); // b.level is still Severity.Log
-const c = getLogger('NamespaceC'); // Only c.level is Severity.Error
+const aAlias = getLogger('NamespaceA'); // a.level is still Level.Warn
+const bAlias = getLogger('NamespaceB'); // b.level is still Level.Log
+const c = getLogger('NamespaceC'); // Only c.level is Level.Error
 
-aCopy.warn('aCopy === a ?', aCopy === a);
-bCopy.warn('bCopy === b ?', bCopy === b);
+aAlias.warn('aAlias === a ?', aAlias === a);
+bAlias.warn('bAlias === b ?', bAlias === b);
 
-a.warn('NamespaceA level:', a.level);
-b.log('NamespaceB level:', b.level);
-c.error('NamespaceC level:', c.level);
+a.warn('level:', a.level);
+b.log('level:', b.level);
+c.error('level:', c.level);
 ```
 
 *Console output:*
 
 ```console
-[NamespaceA] aCopy === a ? true
-[NamespaceB] bCopy === b ? true
-[NamespaceA] level: 3
-[NamespaceB] level: 2
-[NamespaceC] level: 4
+[NamespaceA] aAlias === a ? true
+[NamespaceB] bAlias === b ? true
+[NamespaceA] level: 2
+[NamespaceB] level: 1
+[NamespaceC] level: 3
 ```
 
-### Configure severity from state
+### Configure level from state
 
 The namespace follows the pattern `[Module]:[Feature]`.
 You can use the symbol `*` as a wildcard to target all the features of a module like this: `[Module]:*`.
-In the same way, you can use `*` to target all modules and features (this is like overwriting the default serevity globally).
+In the same way, you can use `*` to target all modules and features (this is like overwriting the default level globally).
 
 ```js
 import { getLogger, state } from 'ns-logger';
 
-state.severity = {
+state.level = {
   'ModuleA:Feature1': 0,
   'ModuleA:Feature2': 1,
   'ModuleA:*': 2, // Wildcard for all the features of a module
@@ -163,9 +163,9 @@ console.log(
 0 1 2 3 4
 ```
 
-### Configure severity using `localStorage`
+### Configure level using `localStorage`
 
-In the brower, you can manage the `state.severity` from the `localStorage`.
+In the brower, you can manage the `state.level` from the `localStorage`.
 
 To get the same result as above, just enter the following line in the browser console and reload the page:
 
@@ -186,7 +186,7 @@ that exposes the package as the global variable `NsLogger`.
 
 <script>
   const logger = NsLogger.getLogger('MyNamespace');
-  logger.warn('Cool!');
+  logger.warn('Cool!'); // [MyNamespace] Cool!
 </script>
 ```
 
