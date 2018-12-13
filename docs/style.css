@@ -4,18 +4,23 @@ html {
 }
 
 body {
-  margin: 2rem;
-  padding-bottom: 2rem;
-}
-
-h1, h2 {
-  font-weight: 400;
+  margin: 1.5rem;
 }
 
 h1 {
+  margin: 0 0 2rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #ddd;
+  background: url(./images/terminal-solid.svg) no-repeat left center;
+  background-size: auto 1em;
   font-size: 3rem;
+  font-weight: 400;
+  text-indent: 1.5em;
+}
+
+h2 {
+  margin: 2rem 0 1rem 0;
+  font-weight: 400;
 }
 
 hr {
@@ -25,8 +30,17 @@ hr {
 }
 
 p {
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   line-height: 1.5rem;
+}
+
+a {
+  color: dodgerblue;
+  text-decoration: none;
+}
+
+a:hover, a:active, a:focus {
+  text-decoration: underline;
 }
 
 blockquote {
@@ -66,6 +80,17 @@ button {
 small {
   display: block;
   color: #999;
+}
+
+footer {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+footer a {
+  padding-left: 1.5em;
+  background: url(./images/github-brands.svg) no-repeat left center;
+  background-size: auto 1.25em;
 }
 
 #console-events {

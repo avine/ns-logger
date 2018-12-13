@@ -12,13 +12,18 @@
   <script type="text/javascript" src="ns-logger.js"></script>
 </head>
 <body>
-  <h1>NsLogger</h1>
-  <blockquote>
-    Open the console to see the logs.<br>
-    Check the source code to understand what's happening.
-  </blockquote>
+  <header>
+    <h1>NsLogger</h1>
+    <blockquote>
+      Open the console to see the logs.<br>
+      Check the source code to understand what's happening.
+    </blockquote>
+  </header>
 
   <h2>Set localStorage</h2>
+  <p>
+    Configure the severity levels that are displayed in the console (0=Trace ; 1=Log ; 2=Warn ; 3=Error ; 4=Silent).
+  </p>
   <p>
     <pre><code>localStorage.setItem('NsLogger', 'ModuleA:Feature1 = 0; ModuleA:Feature2 = 1; ModuleA:* = 2; ModuleB = 3; * = 4');</code></pre>
     <button id="set-storage">Set and reload</button>
@@ -91,4 +96,8 @@
       button.parentNode.appendChild(status);
     });
   </script>
+
+  <footer>
+    <a href="https://github.com/avine/ns-logger">Github</a>
+  </footer>
 </html>
