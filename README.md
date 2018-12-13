@@ -8,7 +8,7 @@ Logger with namespace support for node and browser
 
 ### Get logger
 
-By default, only `warn` and `error` levels are displayed.
+By default, only `warn` and `error` severity levels are displayed in the console.
 
 ```js
 import { getLogger } from 'ns-logger';
@@ -54,15 +54,13 @@ Error: true
 
 ### Change displayed levels
 
-The enum `Level` has the following properties:
+You can change the level programmatically using the `Level` enum:
 
 - `Trace`  (= 0)
 - `Log`    (= 1)
 - `Warn`   (= 2)
 - `Error`  (= 3)
 - `Silent` (= 4)
-
-You can change the level programmatically:
 
 ```js
 import { getLogger, Level } from 'ns-logger';
@@ -199,6 +197,8 @@ import { getLogger } from 'ns-logger';
 ```
 
 ## Contribute
+
+`NsLogger` is written in TypeScript, and that's the fun part.
 
 ```bash
 git clone https://github.com/avine/ns-logger.git

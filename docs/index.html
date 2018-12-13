@@ -35,13 +35,13 @@
     <pre><code id="current-storage"></code></pre>
   </p>
 
-  <h2>Output logs in the console</h2>
-  <p id="output-logs">
-    <button>ModuleA:Feature1</button>
-    <button>ModuleA:Feature2</button>
-    <button>ModuleA:Feature3</button>
-    <button>ModuleB</button>
-    <button>ModuleC</button>
+  <h2>Trigger console events</h2>
+  <p id="console-events">
+    <span><button>ModuleA:Feature1</button></span>
+    <span><button>ModuleA:Feature2</button></span>
+    <span><button>ModuleA:Feature3</button></span>
+    <span><button>ModuleB</button></span>
+    <span><button>ModuleC</button></span>
   </p>
 
   <script>
@@ -56,15 +56,15 @@
     });
 
     document.getElementById('current-storage').innerHTML =
-      'NsLogger.state.level = ' + JSON.stringify(NsLogger.state.level);
+      'NsLogger.state.level === ' + JSON.stringify(NsLogger.state.level);
 
-    document.getElementById('output-logs').addEventListener('click', function(event) {
+    document.getElementById('console-events').addEventListener('click', function(event) {
       if (event.target.nodeName !== 'BUTTON') {
         return;
       }
-      const namespace = event.target.innerText;
-
+      const namespace = event.target.textContent;
       try {
+        // Trigger console event for each Severity
         const logger = NsLogger.getLogger(namespace);
         logger.trace('Trace');
         logger.log('Log');
@@ -73,6 +73,22 @@
       } catch(e) {
         alert(e);
       }
+    });
+
+    const buttons = document.querySelectorAll('#console-events button');
+    Array.prototype.forEach.call(buttons, button => {
+      const namespace = button.textContent;
+
+      // Get logger instance
+      const logger = NsLogger.getLogger(namespace);
+
+      // Get level as string ('Trace', 'Log', 'Warn', ...) instead of number
+      const levelEnum = NsLogger.Level[logger.level];
+
+      const status = document.createElement('small');
+      status.textContent = `Level: ${logger.level} (${levelEnum})`;
+
+      button.parentNode.appendChild(status);
     });
   </script>
 </html>
