@@ -8,7 +8,7 @@ Logger with namespace support for node and browser
 
 ### Get logger
 
-By default, only `warn` and `error` severities are logged.
+By default, only `warn` and `error` levels are displayed.
 
 ```js
 import { getLogger } from 'ns-logger';
@@ -28,9 +28,9 @@ logger.error('Error visible');
 [MyNamespace] Error visible
 ```
 
-### Check whether a logger level is enabled
+### Check whether a level is enabled
 
-By checking the `enabled` readonly property, you can determine whether or not a logger level is enabled.
+By checking the `enabled` readonly property, you can determine whether or not a level is enabled.
 
 ```js
 import { getLogger } from 'ns-logger';
@@ -52,7 +52,7 @@ Warn: true
 Error: true
 ```
 
-### Change severity level that is displayed
+### Change displayed levels
 
 The enum `Level` has the following properties:
 
@@ -62,7 +62,7 @@ The enum `Level` has the following properties:
 - `Error`  (= 3)
 - `Silent` (= 4)
 
-You can change the logger level programmatically:
+You can change the level programmatically:
 
 ```js
 import { getLogger, Level } from 'ns-logger';
