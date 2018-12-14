@@ -1,12 +1,12 @@
 "use strict";
-// ===== Dependencies injection =====
+// ===== Plugins =====
 Object.defineProperty(exports, "__esModule", { value: true });
-var hooks = {
-    namespace: function (severity, namespace) { return "[" + namespace + "]"; },
+var plugins = {
+    renderNamespace: function (severity, namespace) { return "[" + namespace + "]"; },
 };
-exports.inject = {
-    namespace: function (hook) {
-        hooks.namespace = hook;
+exports.definePlugin = {
+    renderNamespace: function (plugin) {
+        plugins.renderNamespace = plugin;
     },
 };
 /**
@@ -30,7 +30,7 @@ exports.disableInProduction = function () { settings.disabled = true; };
 // ===== Logger builder =====
 var SEVERITIES = ['trace', 'log', 'warn', 'error'];
 var consoleFactory = function (severity, namespace) {
-    return console[severity].bind(console, hooks.namespace(severity, namespace));
+    return console[severity].bind(console, plugins.renderNamespace(severity, namespace));
 };
 function noop() { } // tslint:disable-line:no-empty
 exports.bindTo = { consoleFactory: consoleFactory, noop: noop };

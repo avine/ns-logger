@@ -198,6 +198,28 @@ import { getLogger } from 'ns-logger';
 
 For a live preview, check out this [demo](https://avine.github.io/ns-logger/) in your favorite browser.
 
+## Plugins
+
+### Chalk-plugin
+
+This plugin uses [Chalk](https://www.npmjs.com/package/chalk) to style the namespace depending on severity.
+
+```js
+import 'ns-logger/chalk-plugin';
+import { getLogger } from 'ns-logger';
+
+const logger = getLogger('MyNamespace');
+logger.error('Message...');
+```
+
+*Console output:*
+
+```console
+[MyNamespace] Message...
+```
+
+The string `[MyNamespace]` will appear in red color in the console.
+
 ## Contribute
 
 `NsLogger` is written in TypeScript, and that's the fun part.

@@ -1,8 +1,8 @@
-export interface IHooks {
-    namespace: (severity: Severity, namespace: string) => string;
+export interface IPlugins {
+    renderNamespace: (severity: Severity, namespace: string) => string;
 }
-export declare const inject: {
-    namespace(hook: (severity: Severity, namespace: string) => string): void;
+export declare const definePlugin: {
+    renderNamespace(plugin: (severity: Severity, namespace: string) => string): void;
 };
 /**
  * Severity of the message

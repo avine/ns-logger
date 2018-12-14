@@ -1,16 +1,16 @@
-// ===== Dependencies injection =====
+// ===== Plugins =====
 
-export interface IHooks {
-  namespace: (severity: Severity, namespace: string) => string;
+export interface IPlugins {
+  renderNamespace: (severity: Severity, namespace: string) => string;
 }
 
-const hooks: IHooks = {
-  namespace: (severity, namespace) => `[${namespace}]`,
+const plugins: IPlugins = {
+  renderNamespace: (severity, namespace) => `[${namespace}]`,
 };
 
-export const inject = {
-  namespace(hook: IHooks['namespace']) {
-    hooks.namespace = hook;
+export const definePlugin = {
+  renderNamespace(plugin: IPlugins['renderNamespace']) {
+    plugins.renderNamespace = plugin;
   },
 };
 
@@ -53,7 +53,7 @@ export const disableInProduction = () => { settings.disabled = true; };
 const SEVERITIES: Severity[] = ['trace', 'log', 'warn', 'error'];
 
 const consoleFactory = (severity: Severity, namespace: string) =>
-  console[severity].bind(console, hooks.namespace(severity, namespace));
+  console[severity].bind(console, plugins.renderNamespace(severity, namespace));
 
 function noop() {} // tslint:disable-line:no-empty
 
