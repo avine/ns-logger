@@ -11,7 +11,7 @@ Logger with namespace support for node and browser
 By default, only `warn` and `error` severity levels are displayed in the console.
 
 ```js
-import { getLogger } from 'ns-logger';
+import { getLogger } from '@avine/ns-logger';
 
 const logger = getLogger('MyNamespace');
 
@@ -33,7 +33,7 @@ logger.error('Error visible');
 By checking the `enabled` readonly property, you can determine whether or not a level is enabled.
 
 ```js
-import { getLogger } from 'ns-logger';
+import { getLogger } from '@avine/ns-logger';
 
 const logger = getLogger('MyNamespace');
 
@@ -63,7 +63,7 @@ You can change the level programmatically using the `Level` enum:
 - `Silent` (= 4)
 
 ```js
-import { getLogger, Level } from 'ns-logger';
+import { getLogger, Level } from '@avine/ns-logger';
 
 const logger = getLogger('MyNamespace');
 
@@ -97,7 +97,7 @@ Existing loggers are NOT affected by new default level settings.
 Only fresh created loggers are affected.
 
 ```js
-import { getLogger, setDefaultLevel, Level } from 'ns-logger';
+import { getLogger, setDefaultLevel, Level } from '@avine/ns-logger';
 
 const a = getLogger('NamespaceA'); // a.level === Level.Warn
 
@@ -136,7 +136,7 @@ You can use the symbol `*` as a wildcard to target all the features of a module 
 In the same way, you can use `*` to target all modules and features (this is like overwriting the default level globally).
 
 ```js
-import { getLogger, state } from 'ns-logger';
+import { getLogger, state } from '@avine/ns-logger';
 
 state.level = {
   'ModuleA:Feature1': 0,
@@ -191,7 +191,7 @@ that exposes the package as the global variable `NsLogger`.
 You can also import the package in your code and bundle your application with `webpack` for example or any other bundler of your choice.
 
 ```js
-import { getLogger } from 'ns-logger';
+import { getLogger } from '@avine/ns-logger';
 
 // Your code...
 ```
@@ -205,8 +205,8 @@ For a live preview, check out this [demo](https://avine.github.io/ns-logger/) in
 This plugin uses [Chalk](https://www.npmjs.com/package/chalk) to style the namespace depending on severity.
 
 ```js
-import 'ns-logger/chalk-plugin';
-import { getLogger } from 'ns-logger';
+import '@avine/ns-logger/chalk-plugin';
+import { getLogger } from '@avine/ns-logger';
 
 const logger = getLogger('MyNamespace');
 logger.error('Message...');
