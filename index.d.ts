@@ -1,3 +1,9 @@
+export interface IHooks {
+    namespace: (severity: Severity, namespace: string) => string;
+}
+export declare const inject: {
+    namespace(hook: (severity: Severity, namespace: string) => string): void;
+};
 /**
  * Severity of the message
  */

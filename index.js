@@ -1,6 +1,14 @@
 "use strict";
-// ===== Model =====
+// ===== Dependencies injection =====
 Object.defineProperty(exports, "__esModule", { value: true });
+var hooks = {
+    namespace: function (severity, namespace) { return "[" + namespace + "]"; },
+};
+exports.inject = {
+    namespace: function (hook) {
+        hooks.namespace = hook;
+    },
+};
 /**
  * Minimum severity level of displayed messages
  */
@@ -21,7 +29,9 @@ exports.setDefaultLevel = function (level) { settings.defaultLevel = level; };
 exports.disableInProduction = function () { settings.disabled = true; };
 // ===== Logger builder =====
 var SEVERITIES = ['trace', 'log', 'warn', 'error'];
-var consoleFactory = function (severity, namespace) { return console[severity].bind(console, "[" + namespace + "]"); };
+var consoleFactory = function (severity, namespace) {
+    return console[severity].bind(console, hooks.namespace(severity, namespace));
+};
 function noop() { } // tslint:disable-line:no-empty
 exports.bindTo = { consoleFactory: consoleFactory, noop: noop };
 var loggerBuilder = function (namespace, level) {

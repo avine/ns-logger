@@ -1,3 +1,19 @@
+// ===== Dependencies injection =====
+
+export interface IHooks {
+  namespace: (severity: Severity, namespace: string) => string;
+}
+
+const hooks: IHooks = {
+  namespace: (severity, namespace) => `[${namespace}]`,
+};
+
+export const inject = {
+  namespace(hook: IHooks['namespace']) {
+    hooks.namespace = hook;
+  },
+};
+
 // ===== Model =====
 
 /**
@@ -36,7 +52,8 @@ export const disableInProduction = () => { settings.disabled = true; };
 
 const SEVERITIES: Severity[] = ['trace', 'log', 'warn', 'error'];
 
-const consoleFactory = (severity: Severity, namespace: string) => console[severity].bind(console, `[${namespace}]`);
+const consoleFactory = (severity: Severity, namespace: string) =>
+  console[severity].bind(console, hooks.namespace(severity, namespace));
 
 function noop() {} // tslint:disable-line:no-empty
 
