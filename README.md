@@ -28,9 +28,11 @@ logger.error('Error visible');
 [MyNamespace] Error visible
 ```
 
-### Check whether a level is enabled
+As you can see, the logs are prefixed by the namespace.
 
-By checking the `enabled` readonly property, you can determine whether or not a level is enabled.
+### Check enabled severity levels
+
+Determine whether a severity level is enabled, by checking the `enabled` readonly property.
 
 ```js
 import { getLogger } from '@avine/ns-logger';
@@ -52,15 +54,21 @@ Warn: true
 Error: true
 ```
 
-### Change displayed levels
+### Change severity level of logger instance
 
-You can change the level programmatically using the `Level` enum:
+To change the severity level of logger instance programmatically, set its `level` property using the `Level` enum:
 
-- `Trace`  (= 0)
-- `Log`    (= 1)
-- `Warn`   (= 2)
-- `Error`  (= 3)
-- `Silent` (= 4)
+```ts
+export enum Level {
+  Trace,  // (= 0)
+  Log,    // (= 1)
+  Warn,   // (= 2)
+  Error,  // (= 3)
+  Silent  // (= 4)
+}
+```
+
+Here's how to use it:
 
 ```js
 import { getLogger, Level } from '@avine/ns-logger';
@@ -90,10 +98,10 @@ logger.error('Error hidden...');
 [MyNamespace] Error visible
 ```
 
-### Change default level
+### Change default severity level
 
 `NsLogger` keeps track of instantiated loggers.
-Existing loggers are NOT affected by new default level settings.
+Existing loggers are NOT affected by new default level setting.
 Only fresh created loggers are affected.
 
 ```js
@@ -129,11 +137,21 @@ c.error('level:', c.level);
 [NamespaceC] level: 3
 ```
 
-### Configure level from state
+### Configure severity level of loggers from `state` object
 
-The namespace follows the pattern `[Module]:[Feature]`.
-You can use the symbol `*` as a wildcard to target all the features of a module like this: `[Module]:*`.
-In the same way, you can use `*` to target all modules and features (this is like overwriting the default level globally).
+To configure the severity level of loggers to be instantiated in a declarative way, use the `state.level` object.
+
+```ts
+interface ILevelState {
+  [namespace: string]: Level;
+}
+```
+
+The namespace key has the following pattern `[Module]:[Feature]`.
+
+You can use the symbol `*` as a wildcard to target all features of a module like this: `[Module]:*`.
+
+In the same way, you can use this symbol to target all modules and features (this is like overwriting the default severity level declaratively).
 
 ```js
 import { getLogger, state } from '@avine/ns-logger';
@@ -141,17 +159,17 @@ import { getLogger, state } from '@avine/ns-logger';
 state.level = {
   'ModuleA:Feature1': 0,
   'ModuleA:Feature2': 1,
-  'ModuleA:*': 2, // Wildcard for all the features of a module
+  'ModuleA:*': 2, // Wildcard for all features of a module
   'ModuleB': 3,
-  '*': 4, // Wildcard for all modules
+  '*': 4, // Wildcard for all modules and features
 };
 
 console.log(
   getLogger('ModuleA:Feature1').level,
   getLogger('ModuleA:Feature2').level,
-  getLogger('ModuleA:Feature3').level,
+  getLogger('ModuleA:Feature3').level, // Matches 'ModuleA:*'
   getLogger('ModuleB').level,
-  getLogger('ModuleC').level,
+  getLogger('ModuleC').level, // Matches '*'
 );
 ```
 
@@ -161,11 +179,13 @@ console.log(
 0 1 2 3 4
 ```
 
-### Configure level using `localStorage`
+### Configure severity level of loggers from `localStorage`
 
-In the brower, you can manage the `state.level` from the `localStorage`.
+In the brower, you can set the `state.level` object using `localStorage.NsLogger`.
 
-To get the same result as above, just enter the following line in the browser console and reload the page:
+The `NsLogger` property has following pattern: `[Module]:[Feature] = [Level]; ...`
+
+To get the same result as above, enter the following line in the browser console and reload the page:
 
 ```console
 localStorage.NsLogger = 'ModuleA:Feature1 = 0; ModuleA:Feature2 = 1; ModuleA:* = 2; ModuleB = 3; * = 4;';
@@ -202,7 +222,9 @@ For a live preview, check out this [demo](https://avine.github.io/ns-logger/) in
 
 ### Chalk-plugin
 
-This plugin uses [Chalk](https://www.npmjs.com/package/chalk) to style the namespace depending on severity.
+This plugin is designed for use in node (not  in the browser) and uses
+[Chalk](https://www.npmjs.com/package/chalk)
+package to style the logs prefix depending on the severity level.
 
 ```js
 import '@avine/ns-logger/chalk-plugin';
@@ -218,7 +240,7 @@ logger.error('Message...');
 [MyNamespace] Message...
 ```
 
-The string `[MyNamespace]` will appear in red color in the console.
+The string `[MyNamespace]` will appear in red color in the console (trust me :-).
 
 ## Contribute
 
